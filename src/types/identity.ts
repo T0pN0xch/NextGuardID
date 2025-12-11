@@ -37,6 +37,8 @@ export interface BlockchainRecord {
   consentStatus: ConsentStatus;
   blockNumber: number;
   verified: boolean;
+  ipfsHash?: string;
+  ipfsGateway?: string;
 }
 
 export interface DashboardStats {

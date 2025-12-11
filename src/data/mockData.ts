@@ -168,6 +168,8 @@ export const mockBlockchainRecords: BlockchainRecord[] = [
     consentStatus: 'granted',
     blockNumber: 18234567,
     verified: true,
+    ipfsHash: 'QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco',
+    ipfsGateway: 'https://ipfs.io/ipfs/',
   },
   {
     id: 'b2',
@@ -178,6 +180,8 @@ export const mockBlockchainRecords: BlockchainRecord[] = [
     consentStatus: 'granted',
     blockNumber: 18234100,
     verified: true,
+    ipfsHash: 'QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG',
+    ipfsGateway: 'https://ipfs.io/ipfs/',
   },
   {
     id: 'b3',
@@ -188,6 +192,8 @@ export const mockBlockchainRecords: BlockchainRecord[] = [
     consentStatus: 'granted',
     blockNumber: 18200000,
     verified: true,
+    ipfsHash: 'QmZ4tDuvesekSs4qM5ZBKpXiZGun7S2CYtEZRB3DYXkjGx',
+    ipfsGateway: 'https://ipfs.io/ipfs/',
   },
   {
     id: 'b4',
@@ -198,6 +204,8 @@ export const mockBlockchainRecords: BlockchainRecord[] = [
     consentStatus: 'revoked',
     blockNumber: 18150000,
     verified: true,
+    ipfsHash: 'QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB',
+    ipfsGateway: 'https://ipfs.io/ipfs/',
   },
   {
     id: 'b5',
@@ -208,6 +216,8 @@ export const mockBlockchainRecords: BlockchainRecord[] = [
     consentStatus: 'granted',
     blockNumber: 18180000,
     verified: true,
+    ipfsHash: 'QmQPeNsJPyVWPFDVHb77w8G42Fvo15z4bG2X8D2GhfbSXc',
+    ipfsGateway: 'https://ipfs.io/ipfs/',
   },
   {
     id: 'b6',
@@ -218,6 +228,8 @@ export const mockBlockchainRecords: BlockchainRecord[] = [
     consentStatus: 'granted',
     blockNumber: 18234600,
     verified: true,
+    ipfsHash: 'QmRf22bZar3WKmojipms22PkXH1MZGmvsqzQtuSvQE3uhm',
+    ipfsGateway: 'https://ipfs.io/ipfs/',
   },
 ];
 
