@@ -23,7 +23,7 @@ export function Header({ userName, onLogout }: HeaderProps) {
             <Shield className="w-5 h-5 text-primary-foreground" />
           </div>
           <div>
-            <h1 className="text-lg font-bold gradient-text">MyID Guardian</h1>
+            <h1 className="text-lg font-bold gradient-text">NextGuard ID</h1>
             <p className="text-xs text-muted-foreground">Digital Identity Protection</p>
           </div>
         </div>

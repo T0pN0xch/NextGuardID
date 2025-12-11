@@ -49,3 +49,17 @@ export interface DashboardStats {
   recentRegistrations: number;
   inactiveAccounts: number;
 }
+
+export interface SuspiciousAttempt {
+  id: string;
+  location: string;
+  city: string;
+  country: string;
+  coordinates: { lat: number; lng: number };
+  timestamp: Date;
+  attemptType: 'login' | 'registration' | 'verification';
+  platform: string;
+  ipAddress: string;
+  riskScore: number;
+  blocked: boolean;
+}
