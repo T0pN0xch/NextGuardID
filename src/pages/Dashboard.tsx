@@ -8,7 +8,8 @@ import {
 } from 'lucide-react';
 import { StatsCard } from '@/components/dashboard/StatsCard';
 import { UsageTimeline } from '@/components/dashboard/UsageTimeline';
-import { mockIdentityUsages, mockDashboardStats } from '@/data/mockData';
+import { SuspiciousMap } from '@/components/dashboard/SuspiciousMap';
+import { mockIdentityUsages, mockDashboardStats, mockSuspiciousAttempts } from '@/data/mockData';
 import { useState } from 'react';
 import { IdentityUsage } from '@/types/identity';
 import {
@@ -115,8 +116,13 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Recent Activity */}
+      {/* Suspicious Activity Map */}
       <div className="animate-slide-up" style={{ animationDelay: '700ms' }}>
+        <SuspiciousMap attempts={mockSuspiciousAttempts} />
+      </div>
+
+      {/* Recent Activity */}
+      <div className="animate-slide-up" style={{ animationDelay: '800ms' }}>
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-semibold">Recent Identity Usage</h2>
           <a href="/usage" className="text-sm text-primary hover:underline">View all →</a>

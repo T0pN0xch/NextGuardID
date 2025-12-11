@@ -1,4 +1,4 @@
-import { IdentityUsage, ConsentRecord, BlockchainRecord, DashboardStats } from '@/types/identity';
+import { IdentityUsage, ConsentRecord, BlockchainRecord, DashboardStats, SuspiciousAttempt } from '@/types/identity';
 
 export const mockIdentityUsages: IdentityUsage[] = [
   {
@@ -241,3 +241,71 @@ export const mockDashboardStats: DashboardStats = {
   recentRegistrations: 3,
   inactiveAccounts: 2,
 };
+
+export const mockSuspiciousAttempts: SuspiciousAttempt[] = [
+  {
+    id: 's1',
+    location: 'Lagos, Nigeria',
+    city: 'Lagos',
+    country: 'Nigeria',
+    coordinates: { lat: 6.5244, lng: 3.3792 },
+    timestamp: new Date('2024-12-11T03:45:00'),
+    attemptType: 'login',
+    platform: 'Maybank2u',
+    ipAddress: '197.210.53.xxx',
+    riskScore: 95,
+    blocked: true,
+  },
+  {
+    id: 's2',
+    location: 'Moscow, Russia',
+    city: 'Moscow',
+    country: 'Russia',
+    coordinates: { lat: 55.7558, lng: 37.6173 },
+    timestamp: new Date('2024-12-10T18:22:00'),
+    attemptType: 'registration',
+    platform: 'CryptoExchange XYZ',
+    ipAddress: '95.165.88.xxx',
+    riskScore: 88,
+    blocked: true,
+  },
+  {
+    id: 's3',
+    location: 'Jakarta, Indonesia',
+    city: 'Jakarta',
+    country: 'Indonesia',
+    coordinates: { lat: -6.2088, lng: 106.8456 },
+    timestamp: new Date('2024-12-11T08:15:00'),
+    attemptType: 'verification',
+    platform: 'Unknown Loan App',
+    ipAddress: '114.122.45.xxx',
+    riskScore: 72,
+    blocked: false,
+  },
+  {
+    id: 's4',
+    location: 'Shenzhen, China',
+    city: 'Shenzhen',
+    country: 'China',
+    coordinates: { lat: 22.5431, lng: 114.0579 },
+    timestamp: new Date('2024-12-09T14:30:00'),
+    attemptType: 'login',
+    platform: 'TnG eWallet',
+    ipAddress: '183.60.92.xxx',
+    riskScore: 81,
+    blocked: true,
+  },
+  {
+    id: 's5',
+    location: 'São Paulo, Brazil',
+    city: 'São Paulo',
+    country: 'Brazil',
+    coordinates: { lat: -23.5505, lng: -46.6333 },
+    timestamp: new Date('2024-12-08T21:00:00'),
+    attemptType: 'registration',
+    platform: 'Fake E-commerce Site',
+    ipAddress: '177.85.23.xxx',
+    riskScore: 92,
+    blocked: true,
+  },
+];

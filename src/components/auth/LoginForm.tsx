@@ -35,7 +35,7 @@ export function LoginForm({ onLogin }: LoginFormProps) {
     
     toast({
       title: "Authentication Successful",
-      description: "Welcome to MyID Guardian!",
+      description: "Welcome to NextGuard ID!",
     });
     
     onLogin(icNumber || '880101145678');
@@ -98,7 +98,7 @@ export function LoginForm({ onLogin }: LoginFormProps) {
           <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary to-cyan-500 flex items-center justify-center mx-auto mb-6 shadow-2xl shadow-primary/30 animate-float">
             <Shield className="w-10 h-10 text-primary-foreground" />
           </div>
-          <h1 className="text-3xl font-bold gradient-text">MyID Guardian</h1>
+          <h1 className="text-3xl font-bold gradient-text">NextGuard ID</h1>
           <p className="text-muted-foreground mt-2">Secure Digital Identity Management</p>
         </div>
         
