@@ -6,7 +6,8 @@ import {
   Link2, 
   Settings,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  ShieldAlert
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -14,6 +15,7 @@ import { useState } from 'react';
 
 const navItems = [
   { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard' },
+  { icon: ShieldAlert, label: 'Suspicious Activity', path: '/suspicious' },
   { icon: ListChecks, label: 'ID Usage', path: '/usage' },
   { icon: FileKey, label: 'Consent', path: '/consent' },
   { icon: Link2, label: 'Blockchain', path: '/blockchain' },
