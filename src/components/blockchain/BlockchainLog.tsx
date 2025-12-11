@@ -7,7 +7,8 @@ import {
   CheckCircle2, 
   ExternalLink, 
   Copy,
-  Clock
+  Clock,
+  HardDrive
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { toast } from '@/hooks/use-toast';
@@ -72,37 +73,80 @@ export function BlockchainLog({ records }: BlockchainLogProps) {
             </Badge>
           </div>
           
-          <div className="mt-4 pt-4 border-t border-border/50">
-            <p className="text-xs text-muted-foreground mb-2">Transaction Hash</p>
-            <div className="flex items-center gap-2">
-              <code className="text-xs font-mono text-primary bg-primary/10 px-3 py-2 rounded-lg flex-1 truncate">
-                {record.transactionHash}
-              </code>
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="h-8 w-8"
-                onClick={() => copyToClipboard(record.transactionHash)}
-              >
-                <Copy className="w-4 h-4" />
-              </Button>
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="h-8 w-8"
-                onClick={() => window.open(`https://etherscan.io/tx/${record.transactionHash}`, '_blank')}
-              >
-                <ExternalLink className="w-4 h-4" />
-              </Button>
+          <div className="mt-4 pt-4 border-t border-border/50 space-y-3">
+            <div>
+              <p className="text-xs text-muted-foreground mb-2">Transaction Hash</p>
+              <div className="flex items-center gap-2">
+                <code className="text-xs font-mono text-primary bg-primary/10 px-3 py-2 rounded-lg flex-1 truncate">
+                  {record.transactionHash}
+                </code>
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="h-8 w-8"
+                  onClick={() => copyToClipboard(record.transactionHash)}
+                >
+                  <Copy className="w-4 h-4" />
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="h-8 w-8"
+                  onClick={() => window.open(`https://etherscan.io/tx/${record.transactionHash}`, '_blank')}
+                >
+                  <ExternalLink className="w-4 h-4" />
+                </Button>
+              </div>
             </div>
+            
+            {record.ipfsHash && (
+              <div>
+                <p className="text-xs text-muted-foreground mb-2 flex items-center gap-1">
+                  <HardDrive className="w-3 h-3" />
+                  IPFS Storage
+                </p>
+                <div className="flex items-center gap-2">
+                  <code className="text-xs font-mono text-accent bg-accent/10 px-3 py-2 rounded-lg flex-1 truncate">
+                    {record.ipfsHash}
+                  </code>
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="h-8 w-8"
+                    onClick={() => copyToClipboard(record.ipfsHash!)}
+                  >
+                    <Copy className="w-4 h-4" />
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="h-8 w-8"
+                    onClick={() => window.open(`${record.ipfsGateway}${record.ipfsHash}`, '_blank')}
+                  >
+                    <ExternalLink className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
+            )}
           </div>
           
-          <div className="mt-3 flex items-center gap-2">
-            <span className="text-xs text-muted-foreground">Verification:</span>
-            <div className="flex items-center gap-1 text-xs text-success">
-              <CheckCircle2 className="w-3 h-3" />
-              <span>Verified on blockchain</span>
+          <div className="mt-3 flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-muted-foreground">Blockchain:</span>
+              <div className="flex items-center gap-1 text-xs text-success">
+                <CheckCircle2 className="w-3 h-3" />
+                <span>Verified</span>
+              </div>
             </div>
+            {record.ipfsHash && (
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-muted-foreground">IPFS:</span>
+                <div className="flex items-center gap-1 text-xs text-accent">
+                  <HardDrive className="w-3 h-3" />
+                  <span>Pinned</span>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       ))}

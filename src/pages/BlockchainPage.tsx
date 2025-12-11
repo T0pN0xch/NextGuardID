@@ -3,7 +3,7 @@ import { BlockchainLog } from '@/components/blockchain/BlockchainLog';
 import { mockBlockchainRecords } from '@/data/mockData';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Search, Box, Shield, RefreshCw, ExternalLink } from 'lucide-react';
+import { Search, Box, Shield, RefreshCw, ExternalLink, HardDrive } from 'lucide-react';
 import { ConsentStatus } from '@/types/identity';
 import {
   Select,
@@ -81,21 +81,48 @@ export default function BlockchainPage() {
           </div>
         </div>
         <div className="glass-elevated rounded-xl p-4 animate-slide-up" style={{ animationDelay: '300ms' }}>
-          <a 
-            href="https://etherscan.io" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="flex items-center gap-3 hover:opacity-80 transition-opacity"
-          >
-            <div className="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center">
-              <ExternalLink className="w-5 h-5 text-foreground" />
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-accent/20 flex items-center justify-center">
+              <HardDrive className="w-5 h-5 text-accent" />
             </div>
             <div>
-              <p className="text-sm font-medium">View Explorer</p>
-              <p className="text-xs text-muted-foreground">Etherscan →</p>
+              <p className="text-2xl font-bold">{mockBlockchainRecords.filter(r => r.ipfsHash).length}</p>
+              <p className="text-sm text-muted-foreground">IPFS Stored</p>
             </div>
-          </a>
+          </div>
         </div>
+      </div>
+
+      {/* Explorer Links */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <a 
+          href="https://etherscan.io" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="glass-elevated rounded-xl p-4 flex items-center gap-3 hover:scale-[1.02] transition-transform"
+        >
+          <div className="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center">
+            <ExternalLink className="w-5 h-5 text-foreground" />
+          </div>
+          <div>
+            <p className="text-sm font-medium">Blockchain Explorer</p>
+            <p className="text-xs text-muted-foreground">View on Etherscan →</p>
+          </div>
+        </a>
+        <a 
+          href="https://ipfs.io" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="glass-elevated rounded-xl p-4 flex items-center gap-3 hover:scale-[1.02] transition-transform"
+        >
+          <div className="w-10 h-10 rounded-lg bg-accent/20 flex items-center justify-center">
+            <HardDrive className="w-5 h-5 text-accent" />
+          </div>
+          <div>
+            <p className="text-sm font-medium">IPFS Gateway</p>
+            <p className="text-xs text-muted-foreground">Decentralized Storage →</p>
+          </div>
+        </a>
       </div>
 
       {/* Filters */}
@@ -124,16 +151,28 @@ export default function BlockchainPage() {
         </div>
       </div>
 
-      {/* Info Banner */}
-      <div className="glass-elevated rounded-xl p-4 border-l-4 border-primary animate-slide-up">
-        <div className="flex items-start gap-3">
-          <Shield className="w-5 h-5 text-primary mt-0.5" />
-          <div>
-            <h3 className="font-semibold text-sm">Blockchain Verification</h3>
-            <p className="text-sm text-muted-foreground mt-1">
-              Every identity usage is recorded on the blockchain, creating an immutable audit trail.
-              Click on any transaction hash to verify it on the public blockchain explorer.
-            </p>
+      {/* Info Banners */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="glass-elevated rounded-xl p-4 border-l-4 border-primary animate-slide-up">
+          <div className="flex items-start gap-3">
+            <Shield className="w-5 h-5 text-primary mt-0.5" />
+            <div>
+              <h3 className="font-semibold text-sm">Blockchain Verification</h3>
+              <p className="text-sm text-muted-foreground mt-1">
+                Every identity usage is recorded on the blockchain, creating an immutable audit trail.
+              </p>
+            </div>
+          </div>
+        </div>
+        <div className="glass-elevated rounded-xl p-4 border-l-4 border-accent animate-slide-up" style={{ animationDelay: '100ms' }}>
+          <div className="flex items-start gap-3">
+            <HardDrive className="w-5 h-5 text-accent mt-0.5" />
+            <div>
+              <h3 className="font-semibold text-sm">IPFS Storage</h3>
+              <p className="text-sm text-muted-foreground mt-1">
+                Consent data is stored on IPFS for decentralized, permanent, and tamper-proof storage.
+              </p>
+            </div>
           </div>
         </div>
       </div>
