@@ -2,7 +2,9 @@ import { AlertTriangle, MapPin, Shield, X } from 'lucide-react';
 import { SuspiciousAttempt } from '@/types/identity';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 
 interface SuspiciousMapProps {
   attempts: SuspiciousAttempt[];
@@ -10,14 +12,111 @@ interface SuspiciousMapProps {
 
 export function SuspiciousMap({ attempts }: SuspiciousMapProps) {
   const [selectedAttempt, setSelectedAttempt] = useState<SuspiciousAttempt | null>(null);
+  const mapRef = useRef<HTMLDivElement>(null);
+  const mapInstanceRef = useRef<L.Map | null>(null);
+  const markersRef = useRef<L.Marker[]>([]);
 
-  // Map coordinates to percentage positions on the map
-  const getPosition = (lat: number, lng: number) => {
-    // Normalize coordinates to map area (approximate world map)
-    const x = ((lng + 180) / 360) * 100;
-    const y = ((90 - lat) / 180) * 100;
-    return { x: Math.max(5, Math.min(95, x)), y: Math.max(10, Math.min(90, y)) };
-  };
+  // User location (Malaysia - Kuala Lumpur)
+  const userLocation = { lat: 3.1390, lng: 101.6869 };
+
+  useEffect(() => {
+    if (!mapRef.current || mapInstanceRef.current) return;
+
+    // Initialize map centered on user location
+    const map = L.map(mapRef.current, {
+      center: [userLocation.lat, userLocation.lng],
+      zoom: 2,
+      zoomControl: true,
+      scrollWheelZoom: true,
+    });
+
+    // Add OpenStreetMap tiles with dark style
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+      subdomains: 'abcd',
+      maxZoom: 19
+    }).addTo(map);
+
+    mapInstanceRef.current = map;
+
+    return () => {
+      map.remove();
+      mapInstanceRef.current = null;
+    };
+  }, []);
+
+  useEffect(() => {
+    const map = mapInstanceRef.current;
+    if (!map) return;
+
+    // Clear existing markers
+    markersRef.current.forEach(marker => marker.remove());
+    markersRef.current = [];
+
+    // Create custom icons
+    const threatIcon = L.divIcon({
+      className: 'custom-marker',
+      html: `<div class="relative">
+        <span class="absolute inset-0 w-6 h-6 -m-1 rounded-full bg-red-500/30 animate-ping"></span>
+        <div class="w-4 h-4 rounded-full bg-red-500 shadow-lg shadow-red-500/50 flex items-center justify-center border-2 border-white">
+          <svg class="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/></svg>
+        </div>
+      </div>`,
+      iconSize: [16, 16],
+      iconAnchor: [8, 8],
+    });
+
+    const blockedIcon = L.divIcon({
+      className: 'custom-marker',
+      html: `<div class="w-4 h-4 rounded-full bg-yellow-500 shadow-lg shadow-yellow-500/50 flex items-center justify-center border-2 border-white">
+        <svg class="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/></svg>
+      </div>`,
+      iconSize: [16, 16],
+      iconAnchor: [8, 8],
+    });
+
+    const userIcon = L.divIcon({
+      className: 'custom-marker',
+      html: `<div class="w-6 h-6 rounded-full bg-emerald-500 shadow-lg shadow-emerald-500/50 flex items-center justify-center border-2 border-white">
+        <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+      </div>`,
+      iconSize: [24, 24],
+      iconAnchor: [12, 12],
+    });
+
+    // Add user location marker
+    const userMarker = L.marker([userLocation.lat, userLocation.lng], { icon: userIcon })
+      .addTo(map)
+      .bindPopup('<div class="text-center font-semibold text-emerald-600">Your Location<br/><span class="text-gray-600 font-normal">Malaysia</span></div>');
+    markersRef.current.push(userMarker);
+
+    // Add attempt markers
+    attempts.forEach((attempt) => {
+      const icon = attempt.blocked ? blockedIcon : threatIcon;
+      const marker = L.marker([attempt.coordinates.lat, attempt.coordinates.lng], { icon })
+        .addTo(map)
+        .on('click', () => setSelectedAttempt(attempt));
+      
+      marker.bindPopup(`
+        <div class="min-w-[150px]">
+          <div class="font-semibold ${attempt.blocked ? 'text-yellow-600' : 'text-red-600'}">${attempt.platform}</div>
+          <div class="text-sm text-gray-600">${attempt.city}, ${attempt.country}</div>
+          <div class="text-xs text-gray-500 mt-1">${attempt.blocked ? 'Blocked' : 'Active Threat'}</div>
+        </div>
+      `);
+      
+      markersRef.current.push(marker);
+    });
+
+    // Fit bounds to show all markers
+    if (attempts.length > 0) {
+      const allPoints: [number, number][] = [
+        [userLocation.lat, userLocation.lng],
+        ...attempts.map(a => [a.coordinates.lat, a.coordinates.lng] as [number, number])
+      ];
+      map.fitBounds(allPoints, { padding: [50, 50] });
+    }
+  }, [attempts]);
 
   return (
     <div className="glass-elevated rounded-xl p-5">
@@ -37,104 +136,11 @@ export function SuspiciousMap({ attempts }: SuspiciousMapProps) {
       </div>
 
       {/* Map Container */}
-      <div className="relative w-full h-64 md:h-80 rounded-lg overflow-hidden bg-gradient-to-br from-primary/5 via-background to-cyan-500/5 border border-border/50">
-        {/* World Map Background - Simplified */}
-        <svg
-          viewBox="0 0 1000 500"
-          className="absolute inset-0 w-full h-full opacity-20"
-          preserveAspectRatio="xMidYMid slice"
-        >
-          {/* Simplified continents outline */}
-          <path
-            d="M150,150 Q200,100 300,120 Q400,80 500,100 Q550,90 600,110 L620,140 Q650,130 700,150 L750,180 Q800,200 780,250 L720,280 Q680,320 600,300 L500,320 Q400,350 350,300 L250,280 Q180,250 150,200 Z"
-            fill="currentColor"
-            className="text-muted-foreground"
-          />
-          <path
-            d="M100,200 Q80,250 120,300 Q150,350 200,380 L280,400 Q320,420 380,400 L420,360 Q400,320 350,300 L280,280 Q200,260 150,220 Z"
-            fill="currentColor"
-            className="text-muted-foreground"
-          />
-          <path
-            d="M700,200 Q750,180 800,200 L850,250 Q900,300 880,350 L820,380 Q750,400 700,370 L650,320 Q620,280 650,240 Z"
-            fill="currentColor"
-            className="text-muted-foreground"
-          />
-          {/* Grid lines */}
-          {[...Array(5)].map((_, i) => (
-            <line
-              key={`h${i}`}
-              x1="0"
-              y1={100 * (i + 1)}
-              x2="1000"
-              y2={100 * (i + 1)}
-              stroke="currentColor"
-              strokeWidth="0.5"
-              className="text-border"
-              strokeDasharray="5,5"
-            />
-          ))}
-          {[...Array(9)].map((_, i) => (
-            <line
-              key={`v${i}`}
-              x1={100 * (i + 1)}
-              y1="0"
-              x2={100 * (i + 1)}
-              y2="500"
-              stroke="currentColor"
-              strokeWidth="0.5"
-              className="text-border"
-              strokeDasharray="5,5"
-            />
-          ))}
-        </svg>
-
-        {/* Location Markers */}
-        {attempts.map((attempt) => {
-          const pos = getPosition(attempt.coordinates.lat, attempt.coordinates.lng);
-          return (
-            <button
-              key={attempt.id}
-              className="absolute transform -translate-x-1/2 -translate-y-1/2 group cursor-pointer z-10"
-              style={{ left: `${pos.x}%`, top: `${pos.y}%` }}
-              onClick={() => setSelectedAttempt(attempt)}
-            >
-              {/* Pulse animation for active threats */}
-              {!attempt.blocked && (
-                <span className="absolute inset-0 w-8 h-8 -m-2 rounded-full bg-destructive/30 animate-ping" />
-              )}
-              <div
-                className={`relative w-4 h-4 rounded-full flex items-center justify-center transition-transform group-hover:scale-150 ${
-                  attempt.blocked
-                    ? 'bg-warning shadow-lg shadow-warning/50'
-                    : 'bg-destructive shadow-lg shadow-destructive/50'
-                }`}
-              >
-                <MapPin className="w-2.5 h-2.5 text-white" />
-              </div>
-              {/* Tooltip on hover */}
-              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-popover rounded text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none border border-border shadow-lg">
-                {attempt.city}, {attempt.country}
-              </div>
-            </button>
-          );
-        })}
-
-        {/* User's safe location marker */}
-        <div
-          className="absolute transform -translate-x-1/2 -translate-y-1/2"
-          style={{ left: '72%', top: '35%' }}
-        >
-          <div className="w-6 h-6 rounded-full bg-success flex items-center justify-center shadow-lg shadow-success/50 border-2 border-background">
-            <Shield className="w-3 h-3 text-success-foreground" />
-          </div>
-          <span className="absolute top-full left-1/2 -translate-x-1/2 mt-1 text-[10px] text-success font-medium whitespace-nowrap">
-            You (Malaysia)
-          </span>
-        </div>
-
+      <div className="relative w-full h-64 md:h-80 rounded-lg overflow-hidden border border-border/50">
+        <div ref={mapRef} className="w-full h-full z-0" />
+        
         {/* Legend */}
-        <div className="absolute bottom-2 left-2 flex gap-3 text-[10px]">
+        <div className="absolute bottom-2 left-2 z-[1000] flex gap-3 text-[10px] bg-background/80 backdrop-blur-sm px-2 py-1 rounded">
           <div className="flex items-center gap-1">
             <div className="w-2 h-2 rounded-full bg-destructive" />
             <span className="text-muted-foreground">Active Threat</span>
