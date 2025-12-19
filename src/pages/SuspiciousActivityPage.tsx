@@ -6,6 +6,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { AlertTriangle, MapPin, Clock, Globe, Shield, ShieldAlert, Server, X } from 'lucide-react';
 import { mockSuspiciousAttempts } from '@/data/mockData';
 import { SuspiciousAttempt } from '@/types/identity';
+import { SuspiciousMap } from '@/components/dashboard/SuspiciousMap';
 
 export default function SuspiciousActivityPage() {
   const [selectedAttempt, setSelectedAttempt] = useState<SuspiciousAttempt | null>(null);
@@ -65,40 +66,7 @@ export default function SuspiciousActivityPage() {
       </div>
 
       {/* Map Overview */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <MapPin className="w-5 h-5 text-primary" />
-            Geographic Activity Map
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="relative bg-secondary/30 rounded-xl h-64 overflow-hidden border border-border/50">
-            <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 1000 500%22%3E%3Crect fill=%22%23111827%22 width=%221000%22 height=%22500%22/%3E%3Cpath d=%22M200 150 Q250 100 300 150 T400 150 T500 180 T600 150 T700 180 T800 150%22 stroke=%22%232563eb%22 stroke-width=%221%22 fill=%22none%22 opacity=%220.3%22/%3E%3Cpath d=%22M150 250 Q200 200 250 250 T350 250 T450 280 T550 250 T650 280 T750 250 T850 280%22 stroke=%22%232563eb%22 stroke-width=%221%22 fill=%22none%22 opacity=%220.3%22/%3E%3C/svg%3E')] bg-cover opacity-50" />
-            
-            {mockSuspiciousAttempts.map((attempt, index) => (
-              <button
-                key={attempt.id}
-                onClick={() => setSelectedAttempt(attempt)}
-                className="absolute transform -translate-x-1/2 -translate-y-1/2 group cursor-pointer transition-all hover:scale-125"
-                style={{
-                  left: `${20 + (index * 15)}%`,
-                  top: `${30 + (index % 3) * 20}%`,
-                }}
-              >
-                <div className={`w-4 h-4 rounded-full ${attempt.blocked ? 'bg-warning' : 'bg-destructive'} animate-pulse shadow-lg`} />
-                <div className={`absolute inset-0 w-4 h-4 rounded-full ${attempt.blocked ? 'bg-warning' : 'bg-destructive'} animate-ping opacity-50`} />
-                <div className="absolute left-6 top-0 bg-card/95 backdrop-blur border border-border px-2 py-1 rounded text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity z-10">
-                  {attempt.city}, {attempt.country}
-                </div>
-              </button>
-            ))}
-          </div>
-          <p className="text-sm text-muted-foreground mt-3">
-            Click on any marker to view detailed information about the suspicious activity
-          </p>
-        </CardContent>
-      </Card>
+      <SuspiciousMap attempts={mockSuspiciousAttempts} />
 
       {/* Activity List */}
       <Card>
