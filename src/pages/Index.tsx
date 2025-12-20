@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, forwardRef } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { LoginForm } from '@/components/auth/LoginForm';
 import { Header } from '@/components/layout/Header';
@@ -10,7 +10,8 @@ import ConsentPage from '@/pages/ConsentPage';
 import BlockchainPage from '@/pages/BlockchainPage';
 import SettingsPage from '@/pages/SettingsPage';
 
-const Index = () => {
+
+const Index = forwardRef<HTMLDivElement>((_, ref) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userIc, setUserIc] = useState('');
   const [userName, setUserName] = useState('');
@@ -32,7 +33,7 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div ref={ref} className="min-h-screen bg-background">
       <Header userName={userName} onLogout={handleLogout} />
       <div className="flex">
         <Sidebar />
@@ -44,12 +45,15 @@ const Index = () => {
             <Route path="/usage" element={<UsagePage />} />
             <Route path="/consent" element={<ConsentPage />} />
             <Route path="/blockchain" element={<BlockchainPage />} />
+            
             <Route path="/settings" element={<SettingsPage userName={userName} icNumber={userIc} />} />
           </Routes>
         </main>
       </div>
     </div>
   );
-};
+});
+
+Index.displayName = 'Index';
 
 export default Index;

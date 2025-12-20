@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, forwardRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -21,7 +21,7 @@ function generateExpectedOTP(icNumber: string): string {
   return Math.abs(hash % 1000000).toString().padStart(6, '0');
 }
 
-export function LoginForm({ onLogin }: LoginFormProps) {
+export const LoginForm = forwardRef<HTMLDivElement, LoginFormProps>(({ onLogin }, ref) => {
   const [icNumber, setIcNumber] = useState('');
   const [otpCode, setOtpCode] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -321,4 +321,6 @@ export function LoginForm({ onLogin }: LoginFormProps) {
       </div>
     </div>
   );
-}
+});
+
+LoginForm.displayName = 'LoginForm';
