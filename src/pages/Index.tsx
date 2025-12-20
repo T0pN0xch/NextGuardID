@@ -5,6 +5,7 @@ import { Header } from '@/components/layout/Header';
 import { Sidebar } from '@/components/layout/Sidebar';
 import Dashboard from '@/pages/Dashboard';
 import SuspiciousActivityPage from '@/pages/SuspiciousActivityPage';
+import MyKadLostTrackingPage from '@/pages/MyKadLostTrackingPage';
 import UsagePage from '@/pages/UsagePage';
 import ConsentPage from '@/pages/ConsentPage';
 import BlockchainPage from '@/pages/BlockchainPage';
@@ -42,6 +43,7 @@ const Index = forwardRef<HTMLDivElement>((_, ref) => {
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/suspicious" element={<SuspiciousActivityPage />} />
+            <Route path="/mykad-tracking" element={<MyKadLostTrackingPage />} />
             <Route path="/usage" element={<UsagePage />} />
             <Route path="/consent" element={<ConsentPage />} />
             <Route path="/blockchain" element={<BlockchainPage />} />
