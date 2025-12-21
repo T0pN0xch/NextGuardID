@@ -2,7 +2,7 @@ import { useState, useMemo, forwardRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Shield, CreditCard, Fingerprint, Loader2, Smartphone, ArrowLeft } from 'lucide-react';
+import { Shield, Fingerprint, Loader2, Smartphone, ArrowLeft } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
 
@@ -25,7 +25,7 @@ export const LoginForm = forwardRef<HTMLDivElement, LoginFormProps>(({ onLogin }
   const [icNumber, setIcNumber] = useState('');
   const [otpCode, setOtpCode] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [loginMethod, setLoginMethod] = useState<'ic' | 'nfc' | 'digital'>('ic');
+  const [loginMethod, setLoginMethod] = useState<'ic' | 'nfc' | 'digital'>('digital');
   const [step, setStep] = useState<'credentials' | 'otp'>('credentials');
 
   // Generate expected OTP based on IC number
@@ -33,7 +33,7 @@ export const LoginForm = forwardRef<HTMLDivElement, LoginFormProps>(({ onLogin }
 
   const handleCredentialsSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (loginMethod === 'ic') {
       if (!icNumber || icNumber.length !== 12) {
         toast({
@@ -44,24 +44,24 @@ export const LoginForm = forwardRef<HTMLDivElement, LoginFormProps>(({ onLogin }
         return;
       }
     }
-    
+
     setIsLoading(true);
-    
+
     // Simulate credential verification
     await new Promise(resolve => setTimeout(resolve, 1500));
-    
+
     toast({
       title: "Credentials Verified",
       description: "Please enter the 6-digit code from your authenticator app.",
     });
-    
+
     setStep('otp');
     setIsLoading(false);
   };
 
   const handleOTPSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (otpCode.length !== 6) {
       toast({
         title: "Invalid Code",
@@ -72,10 +72,10 @@ export const LoginForm = forwardRef<HTMLDivElement, LoginFormProps>(({ onLogin }
     }
 
     setIsLoading(true);
-    
+
     // Simulate OTP verification
     await new Promise(resolve => setTimeout(resolve, 1500));
-    
+
     if (otpCode === expectedOTP) {
       toast({
         title: "Authentication Successful",
@@ -89,46 +89,28 @@ export const LoginForm = forwardRef<HTMLDivElement, LoginFormProps>(({ onLogin }
         variant: "destructive",
       });
     }
-    
+
     setIsLoading(false);
   };
 
-  const handleNFCScan = async () => {
-    setLoginMethod('nfc');
-    setIsLoading(true);
-    
-    toast({
-      title: "Scanning MyKad...",
-      description: "Please place your MyKad on the NFC reader.",
-    });
-    
-    await new Promise(resolve => setTimeout(resolve, 3000));
-    
-    toast({
-      title: "MyKad Detected",
-      description: "Please enter authenticator code to continue.",
-    });
-    
-    setStep('otp');
-    setIsLoading(false);
-  };
+  // NFC login removed — MyDigital ID is the only login method
 
   const handleDigitalID = async () => {
     setLoginMethod('digital');
     setIsLoading(true);
-    
+
     toast({
       title: "Connecting to MyDigital ID",
       description: "Redirecting to secure authentication...",
     });
-    
+
     await new Promise(resolve => setTimeout(resolve, 2500));
-    
+
     toast({
       title: "Identity Verified",
       description: "Please enter authenticator code for 2FA.",
     });
-    
+
     setStep('otp');
     setIsLoading(false);
   };
@@ -144,7 +126,7 @@ export const LoginForm = forwardRef<HTMLDivElement, LoginFormProps>(({ onLogin }
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl animate-pulse-slow" />
         <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl animate-pulse-slow" style={{ animationDelay: '1s' }} />
       </div>
-      
+
       <div className="w-full max-w-md animate-slide-up">
         <div className="text-center mb-8">
           <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary to-cyan-500 flex items-center justify-center mx-auto mb-6 shadow-2xl shadow-primary/30 animate-float">
@@ -153,26 +135,11 @@ export const LoginForm = forwardRef<HTMLDivElement, LoginFormProps>(({ onLogin }
           <h1 className="text-3xl font-bold gradient-text">NextGuard ID</h1>
           <p className="text-muted-foreground mt-2">Secure Digital Identity Management</p>
         </div>
-        
+
         <div className="glass-elevated rounded-2xl p-8">
           {step === 'credentials' ? (
             <>
               <div className="space-y-4 mb-6">
-                <Button
-                  variant={loginMethod === 'nfc' ? 'hero' : 'outline'}
-                  className="w-full h-14 justify-start gap-4"
-                  onClick={handleNFCScan}
-                  disabled={isLoading}
-                >
-                  <div className="w-10 h-10 rounded-lg bg-accent/20 flex items-center justify-center">
-                    <CreditCard className="w-5 h-5 text-accent" />
-                  </div>
-                  <div className="text-left">
-                    <p className="font-semibold">MyKad NFC Login</p>
-                    <p className="text-xs text-muted-foreground">Tap your MyKad on NFC reader</p>
-                  </div>
-                </Button>
-                
                 <Button
                   variant={loginMethod === 'digital' ? 'hero' : 'outline'}
                   className="w-full h-14 justify-start gap-4"
@@ -188,7 +155,11 @@ export const LoginForm = forwardRef<HTMLDivElement, LoginFormProps>(({ onLogin }
                   </div>
                 </Button>
               </div>
-              
+
+              {/*
+                Manual IC entry disabled — MyDigital ID is the only login method.
+                The following form is intentionally commented out per UX requirement.
+
               <div className="relative my-6">
                 <div className="absolute inset-0 flex items-center">
                   <span className="w-full border-t border-border" />
@@ -197,7 +168,7 @@ export const LoginForm = forwardRef<HTMLDivElement, LoginFormProps>(({ onLogin }
                   <span className="bg-card px-2 text-muted-foreground">Or enter manually</span>
                 </div>
               </div>
-              
+
               <form onSubmit={handleCredentialsSubmit} className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="ic-number">IC Number (MyKad)</Label>
@@ -213,11 +184,11 @@ export const LoginForm = forwardRef<HTMLDivElement, LoginFormProps>(({ onLogin }
                   />
                   <p className="text-xs text-muted-foreground">Enter your 12-digit IC number without dashes</p>
                 </div>
-                
-                <Button 
-                  type="submit" 
-                  variant="hero" 
-                  className="w-full h-12" 
+
+                <Button
+                  type="submit"
+                  variant="hero"
+                  className="w-full h-12"
                   disabled={isLoading}
                 >
                   {isLoading ? (
@@ -233,6 +204,8 @@ export const LoginForm = forwardRef<HTMLDivElement, LoginFormProps>(({ onLogin }
                   )}
                 </Button>
               </form>
+
+              */}
             </>
           ) : (
             <>
@@ -246,7 +219,7 @@ export const LoginForm = forwardRef<HTMLDivElement, LoginFormProps>(({ onLogin }
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back
               </Button>
-              
+
               <div className="text-center mb-6">
                 <div className="w-16 h-16 rounded-xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
                   <Smartphone className="w-8 h-8 text-primary" />
@@ -256,7 +229,7 @@ export const LoginForm = forwardRef<HTMLDivElement, LoginFormProps>(({ onLogin }
                   Enter the 6-digit code from your authenticator app
                 </p>
               </div>
-              
+
               <form onSubmit={handleOTPSubmit} className="space-y-6">
                 <div className="flex justify-center">
                   <InputOTP
@@ -278,17 +251,17 @@ export const LoginForm = forwardRef<HTMLDivElement, LoginFormProps>(({ onLogin }
                     </InputOTPGroup>
                   </InputOTP>
                 </div>
-                
+
                 <div className="bg-secondary/30 rounded-lg p-4 border border-border/50">
                   <p className="text-xs text-muted-foreground text-center">
                     <span className="font-semibold text-foreground">Demo Mode:</span> Use code <span className="font-mono text-primary font-bold">{expectedOTP}</span> to login
                   </p>
                 </div>
-                
-                <Button 
-                  type="submit" 
-                  variant="hero" 
-                  className="w-full h-12" 
+
+                <Button
+                  type="submit"
+                  variant="hero"
+                  className="w-full h-12"
                   disabled={isLoading || otpCode.length !== 6}
                 >
                   {isLoading ? (
@@ -306,13 +279,13 @@ export const LoginForm = forwardRef<HTMLDivElement, LoginFormProps>(({ onLogin }
               </form>
             </>
           )}
-          
+
           <p className="text-xs text-center text-muted-foreground mt-6">
             By logging in, you agree to our Terms of Service and Privacy Policy.
             Your identity is protected by blockchain technology.
           </p>
         </div>
-        
+
         <div className="text-center mt-6">
           <p className="text-xs text-muted-foreground">
             🇲🇾 Powered by Malaysian Digital Infrastructure
