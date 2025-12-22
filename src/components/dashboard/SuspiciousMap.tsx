@@ -30,10 +30,9 @@ export function SuspiciousMap({ attempts }: SuspiciousMapProps) {
       scrollWheelZoom: true,
     });
 
-    // Add OpenStreetMap tiles with dark style
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-      subdomains: 'abcd',
+    // Add OpenStreetMap tiles with light style
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
       maxZoom: 19
     }).addTo(map);
 
@@ -56,32 +55,80 @@ export function SuspiciousMap({ attempts }: SuspiciousMapProps) {
     // Create custom icons
     const threatIcon = L.divIcon({
       className: 'custom-marker',
-      html: `<div class="relative">
-        <span class="absolute inset-0 w-6 h-6 -m-1 rounded-full bg-red-500/30 animate-ping"></span>
-        <div class="w-4 h-4 rounded-full bg-red-500 shadow-lg shadow-red-500/50 flex items-center justify-center border-2 border-white">
-          <svg class="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/></svg>
-        </div>
-      </div>`,
-      iconSize: [16, 16],
-      iconAnchor: [8, 8],
+      html: `<div style="
+        width: 44px;
+        height: 44px;
+        background: #ef4444;
+        border: 4px solid white;
+        border-radius: 50%;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3), 0 0 0 2px #ef444440;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+      ">
+        <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+      </div>
+      <style>
+        @keyframes pulse {
+          0%, 100% { box-shadow: 0 4px 12px rgba(0,0,0,0.3), 0 0 0 2px #ef444440; }
+          50% { box-shadow: 0 4px 12px rgba(0,0,0,0.3), 0 0 0 8px #ef444420; }
+        }
+      </style>`,
+      iconSize: [44, 44],
+      iconAnchor: [22, 22],
     });
 
     const blockedIcon = L.divIcon({
       className: 'custom-marker',
-      html: `<div class="w-4 h-4 rounded-full bg-yellow-500 shadow-lg shadow-yellow-500/50 flex items-center justify-center border-2 border-white">
-        <svg class="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/></svg>
-      </div>`,
-      iconSize: [16, 16],
-      iconAnchor: [8, 8],
+      html: `<div style="
+        width: 44px;
+        height: 44px;
+        background: #eab308;
+        border: 4px solid white;
+        border-radius: 50%;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3), 0 0 0 2px #eab30840;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: pulse-yellow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+      ">
+        <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+      </div>
+      <style>
+        @keyframes pulse-yellow {
+          0%, 100% { box-shadow: 0 4px 12px rgba(0,0,0,0.3), 0 0 0 2px #eab30840; }
+          50% { box-shadow: 0 4px 12px rgba(0,0,0,0.3), 0 0 0 8px #eab30820; }
+        }
+      </style>`,
+      iconSize: [44, 44],
+      iconAnchor: [22, 22],
     });
 
     const userIcon = L.divIcon({
       className: 'custom-marker',
-      html: `<div class="w-6 h-6 rounded-full bg-emerald-500 shadow-lg shadow-emerald-500/50 flex items-center justify-center border-2 border-white">
-        <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
-      </div>`,
-      iconSize: [24, 24],
-      iconAnchor: [12, 12],
+      html: `<div style="
+        width: 48px;
+        height: 48px;
+        background: #22c55e;
+        border: 4px solid white;
+        border-radius: 50%;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3), 0 0 0 2px #22c55e40;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: pulse-green 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+      ">
+        <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+      </div>
+      <style>
+        @keyframes pulse-green {
+          0%, 100% { box-shadow: 0 4px 12px rgba(0,0,0,0.3), 0 0 0 2px #22c55e40; }
+          50% { box-shadow: 0 4px 12px rgba(0,0,0,0.3), 0 0 0 8px #22c55e20; }
+        }
+      </style>`,
+      iconSize: [48, 48],
+      iconAnchor: [24, 24],
     });
 
     // Add user location marker
@@ -96,7 +143,7 @@ export function SuspiciousMap({ attempts }: SuspiciousMapProps) {
       const marker = L.marker([attempt.coordinates.lat, attempt.coordinates.lng], { icon })
         .addTo(map)
         .on('click', () => setSelectedAttempt(attempt));
-      
+
       marker.bindPopup(`
         <div class="min-w-[150px]">
           <div class="font-semibold ${attempt.blocked ? 'text-yellow-600' : 'text-red-600'}">${attempt.platform}</div>
@@ -104,7 +151,7 @@ export function SuspiciousMap({ attempts }: SuspiciousMapProps) {
           <div class="text-xs text-gray-500 mt-1">${attempt.blocked ? 'Blocked' : 'Active Threat'}</div>
         </div>
       `);
-      
+
       markersRef.current.push(marker);
     });
 
@@ -136,9 +183,9 @@ export function SuspiciousMap({ attempts }: SuspiciousMapProps) {
       </div>
 
       {/* Map Container */}
-      <div className="relative w-full h-64 md:h-80 rounded-lg overflow-hidden border border-border/50">
+      <div className="relative w-full h-64 md:h-80 rounded-lg overflow-hidden border border-border/50 bg-white">
         <div ref={mapRef} className="w-full h-full z-0" />
-        
+
         {/* Legend */}
         <div className="absolute bottom-2 left-2 z-[1000] flex gap-3 text-[10px] bg-background/80 backdrop-blur-sm px-2 py-1 rounded">
           <div className="flex items-center gap-1">

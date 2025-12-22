@@ -11,7 +11,7 @@ interface TollMapProps {
 
 const createMarkerIcon = (riskLevel: string, lostMode: boolean, isNewSinceLost?: boolean) => {
   let color = '#22c55e'; // green
-  
+
   if (lostMode && isNewSinceLost) {
     color = '#ef4444'; // red for new transactions in lost mode
   } else if (riskLevel === 'high') {
@@ -19,31 +19,38 @@ const createMarkerIcon = (riskLevel: string, lostMode: boolean, isNewSinceLost?:
   } else if (riskLevel === 'medium') {
     color = '#f59e0b'; // amber
   }
-  
+
   return L.divIcon({
     className: 'custom-marker',
     html: `
       <div style="
-        width: 24px;
-        height: 24px;
+        width: 48px;
+        height: 48px;
         background: ${color};
-        border: 3px solid white;
+        border: 4px solid white;
         border-radius: 50%;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3), 0 0 0 2px ${color}40;
         display: flex;
         align-items: center;
         justify-content: center;
+        animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
       ">
         <div style="
-          width: 8px;
-          height: 8px;
+          width: 12px;
+          height: 12px;
           background: white;
           border-radius: 50%;
         "></div>
       </div>
+      <style>
+        @keyframes pulse {
+          0%, 100% { box-shadow: 0 4px 12px rgba(0,0,0,0.3), 0 0 0 2px ${color}40; }
+          50% { box-shadow: 0 4px 12px rgba(0,0,0,0.3), 0 0 0 6px ${color}20; }
+        }
+      </style>
     `,
-    iconSize: [24, 24],
-    iconAnchor: [12, 12],
+    iconSize: [48, 48],
+    iconAnchor: [24, 24],
   });
 };
 
@@ -62,9 +69,9 @@ export function TollMap({ transactions, lostMode, onMarkerClick }: TollMapProps)
       zoomControl: true,
     });
 
-    // Add dark tile layer
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+    // Add light tile layer with OpenStreetMap (more realistic)
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
       maxZoom: 19,
     }).addTo(mapRef.current);
 
@@ -130,10 +137,9 @@ export function TollMap({ transactions, lostMode, onMarkerClick }: TollMapProps)
   }, [transactions, lostMode, onMarkerClick]);
 
   return (
-    <div 
-      ref={mapContainer} 
-      className="w-full h-[400px] rounded-xl overflow-hidden border border-border/50"
-      style={{ background: '#1a1a2e' }}
+    <div
+      ref={mapContainer}
+      className="w-full h-[400px] rounded-xl overflow-hidden border border-border/50 bg-white"
     />
   );
 }
