@@ -2,10 +2,10 @@ import { BlockchainRecord } from '@/types/identity';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { 
-  Box, 
-  CheckCircle2, 
-  ExternalLink, 
+import {
+  Box,
+  CheckCircle2,
+  ExternalLink,
   Copy,
   Clock,
   HardDrive
@@ -45,7 +45,7 @@ export function BlockchainLog({ records }: BlockchainLogProps) {
               <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary/20 to-cyan-500/20 flex items-center justify-center">
                 <Box className="w-6 h-6 text-primary" />
               </div>
-              
+
               <div>
                 <div className="flex items-center gap-2">
                   <h3 className="font-semibold text-foreground">{record.platform}</h3>
@@ -54,7 +54,7 @@ export function BlockchainLog({ records }: BlockchainLogProps) {
                   )}
                 </div>
                 <p className="text-sm text-muted-foreground mt-0.5">{record.action}</p>
-                
+
                 <div className="flex items-center gap-3 mt-2 text-xs text-muted-foreground">
                   <span className="flex items-center gap-1">
                     <Clock className="w-3 h-3" />
@@ -67,12 +67,12 @@ export function BlockchainLog({ records }: BlockchainLogProps) {
                 </div>
               </div>
             </div>
-            
+
             <Badge className={cn("border-0", statusStyles[record.consentStatus])}>
               {record.consentStatus.charAt(0).toUpperCase() + record.consentStatus.slice(1)}
             </Badge>
           </div>
-          
+
           <div className="mt-4 pt-4 border-t border-border/50 space-y-3">
             <div>
               <p className="text-xs text-muted-foreground mb-2">Transaction Hash</p>
@@ -80,25 +80,25 @@ export function BlockchainLog({ records }: BlockchainLogProps) {
                 <code className="text-xs font-mono text-primary bg-primary/10 px-3 py-2 rounded-lg flex-1 truncate">
                   {record.transactionHash}
                 </code>
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
+                <Button
+                  variant="ghost"
+                  size="icon"
                   className="h-8 w-8"
                   onClick={() => copyToClipboard(record.transactionHash)}
                 >
                   <Copy className="w-4 h-4" />
                 </Button>
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
+                <Button
+                  variant="ghost"
+                  size="icon"
                   className="h-8 w-8"
-                  onClick={() => window.open(`https://etherscan.io/tx/${record.transactionHash}`, '_blank')}
+                  onClick={() => window.open(`https://amoy.polygonscan.com/tx/${record.transactionHash}`, '_blank')}
                 >
                   <ExternalLink className="w-4 h-4" />
                 </Button>
               </div>
             </div>
-            
+
             {record.ipfsHash && (
               <div>
                 <p className="text-xs text-muted-foreground mb-2 flex items-center gap-1">
@@ -109,17 +109,17 @@ export function BlockchainLog({ records }: BlockchainLogProps) {
                   <code className="text-xs font-mono text-accent bg-accent/10 px-3 py-2 rounded-lg flex-1 truncate">
                     {record.ipfsHash}
                   </code>
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
+                  <Button
+                    variant="ghost"
+                    size="icon"
                     className="h-8 w-8"
                     onClick={() => copyToClipboard(record.ipfsHash!)}
                   >
                     <Copy className="w-4 h-4" />
                   </Button>
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
+                  <Button
+                    variant="ghost"
+                    size="icon"
                     className="h-8 w-8"
                     onClick={() => window.open(`${record.ipfsGateway}${record.ipfsHash}`, '_blank')}
                   >
@@ -129,7 +129,7 @@ export function BlockchainLog({ records }: BlockchainLogProps) {
               </div>
             )}
           </div>
-          
+
           <div className="mt-3 flex items-center gap-4">
             <div className="flex items-center gap-2">
               <span className="text-xs text-muted-foreground">Blockchain:</span>

@@ -7,6 +7,7 @@ import { AlertTriangle, MapPin, Clock, Globe, Shield, ShieldAlert, Server, X } f
 import { mockSuspiciousAttempts } from '@/data/mockData';
 import { SuspiciousAttempt } from '@/types/identity';
 import { SuspiciousMap } from '@/components/dashboard/SuspiciousMap';
+import ChatWidget from '@/components/chat/ChatWidget';
 
 export default function SuspiciousActivityPage() {
   const [selectedAttempt, setSelectedAttempt] = useState<SuspiciousAttempt | null>(null);
@@ -35,7 +36,7 @@ export default function SuspiciousActivityPage() {
 
   const getRecommendations = (attempt: SuspiciousAttempt) => {
     const recommendations = [];
-    
+
     if (attempt.riskScore >= 80) {
       recommendations.push('Immediately change your passwords for all linked accounts');
       recommendations.push('Enable two-factor authentication if not already active');
@@ -48,11 +49,11 @@ export default function SuspiciousActivityPage() {
       recommendations.push('Keep monitoring your account activities');
       recommendations.push('Ensure your security settings are up to date');
     }
-    
+
     if (!attempt.blocked) {
       recommendations.unshift('URGENT: This attempt was not blocked - take immediate action');
     }
-    
+
     return recommendations;
   };
 
@@ -142,7 +143,7 @@ export default function SuspiciousActivityPage() {
               Detailed analysis of this security incident
             </DialogDescription>
           </DialogHeader>
-          
+
           {selectedAttempt && (
             <div className="space-y-6">
               {/* Status Banner */}
@@ -237,6 +238,11 @@ export default function SuspiciousActivityPage() {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Assistant for this page */}
+      <div className="mt-6">
+        <ChatWidget title="Suspicious Activity Assistant" />
+      </div>
     </div>
   );
 }

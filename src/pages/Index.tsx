@@ -10,6 +10,7 @@ import UsagePage from '@/pages/UsagePage';
 import ConsentPage from '@/pages/ConsentPage';
 import BlockchainPage from '@/pages/BlockchainPage';
 import SettingsPage from '@/pages/SettingsPage';
+import ProfilePage from '@/pages/ProfilePage';
 
 
 const Index = forwardRef<HTMLDivElement>((_, ref) => {
@@ -40,14 +41,14 @@ const Index = forwardRef<HTMLDivElement>((_, ref) => {
         <Sidebar />
         <main className="flex-1 min-h-[calc(100vh-4rem)] overflow-auto">
           <Routes>
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            <Route path="/" element={<Navigate to="/consent" replace />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/suspicious" element={<SuspiciousActivityPage />} />
             <Route path="/mykad-tracking" element={<MyKadLostTrackingPage />} />
             <Route path="/usage" element={<UsagePage />} />
-            <Route path="/consent" element={<ConsentPage />} />
-            <Route path="/blockchain" element={<BlockchainPage />} />
-            
+            <Route path="/consent" element={<ConsentPage userIc={userIc} />} />
+            <Route path="/blockchain" element={<BlockchainPage userIc={userIc} />} />
+            <Route path="/profile" element={<ProfilePage userName={userName} userIc={userIc} />} />
             <Route path="/settings" element={<SettingsPage userName={userName} icNumber={userIc} />} />
           </Routes>
         </main>

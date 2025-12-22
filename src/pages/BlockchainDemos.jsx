@@ -10,19 +10,54 @@ const BlockchainDemo = () => {
 
   const handleLogTransaction = async () => {
     setLoading(true);
-    
-    // Log to blockchain (mock for demo)
-    const tx = await blockchainService.logConsent(mykad, platform, action);
-    
-    setTransactions([tx, ...transactions]);
-    
-    setLoading(false);
-    alert(`✅ Transaction logged!\nView: ${tx.etherscanUrl}`);
+    try {
+      // Attempt wallet connect and real on-chain logging with IPFS metadata
+      if (!blockchainService.signer) {
+        await blockchainService.connectWallet();
+      }
+
+      const metadata = {
+        mykad: mykad,
+        platform,
+        action,
+        ts: new Date().toISOString()
+      };
+
+      const tx = await blockchainService.logConsentWithIPFS(mykad, platform, action, metadata);
+
+      // normalize result for UI
+      const out = { hash: tx.hash || tx.txHash, etherscanUrl: tx.etherscanUrl, ipfsHash: tx.ipfsHash };
+      setTransactions([out, ...transactions]);
+      alert(`✅ Transaction logged!\nView: ${out.etherscanUrl}`);
+    } catch (err) {
+      // fallback to mock behavior
+      const tx = await blockchainService.logConsent(mykad, platform, action);
+      setTransactions([tx, ...transactions]);
+      alert(`✅ (Mock) Transaction logged!\nView: ${tx.etherscanUrl}`);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleViewTransactions = async () => {
-    const events = await blockchainService.getUserEvents(mykad);
-    setTransactions(events);
+    setLoading(true);
+    try {
+      const events = await blockchainService.getUserEvents(mykad);
+      // normalize events for the UI
+      const mapped = events.map(ev => ({
+        hash: ev.txHash || ev.transactionHash || ev.hash,
+        etherscanUrl: ev.etherscanUrl || (`https://amoy.polygonscan.com/tx/${ev.txHash || ev.transactionHash || ev.hash}`),
+        action: ev.actionType || ev.action || '',
+        platform: ev.platformId || ev.platform || ''
+      }));
+      setTransactions(mapped);
+    } catch (err) {
+      console.error('Failed fetching events', err);
+      const events = await blockchainService.getUserEvents(mykad);
+      setTransactions(events);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

@@ -1,6 +1,7 @@
 import { Shield, Bell, User, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { useNavigate } from 'react-router-dom';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,6 +16,7 @@ interface HeaderProps {
 }
 
 export function Header({ userName, onLogout }: HeaderProps) {
+  const navigate = useNavigate();
   return (
     <header className="glass-elevated sticky top-0 z-50 border-b border-border/50">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
@@ -30,7 +32,7 @@ export function Header({ userName, onLogout }: HeaderProps) {
 
         <div className="flex items-center gap-3">
           <ThemeToggle />
-          
+
           <Button variant="ghost" size="icon" className="relative">
             <Bell className="w-5 h-5" />
             <span className="absolute -top-1 -right-1 w-4 h-4 bg-destructive rounded-full text-[10px] flex items-center justify-center text-destructive-foreground font-bold">
@@ -48,9 +50,12 @@ export function Header({ userName, onLogout }: HeaderProps) {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48 glass-elevated">
-              <DropdownMenuItem className="cursor-pointer">
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onClick={() => navigate('/profile')}
+              >
                 <User className="w-4 h-4 mr-2" />
-                Profile Settings
+                My Profile
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={onLogout} className="cursor-pointer text-destructive">

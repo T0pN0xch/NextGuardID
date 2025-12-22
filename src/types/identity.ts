@@ -13,6 +13,7 @@ export interface IdentityUsage {
   category: string;
   dataShared: string[];
   lastAccessed: Date;
+  offlineNote?: string;
 }
 
 export interface ConsentRecord {
@@ -24,6 +25,7 @@ export interface ConsentRecord {
   status: ConsentStatus;
   dataTypes: string[];
   blockchainHash: string;
+  ipfsHash?: string;
   canRevoke: boolean;
   canDelete: boolean;
 }

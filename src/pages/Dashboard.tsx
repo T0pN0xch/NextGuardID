@@ -1,8 +1,8 @@
-import { 
-  Shield, 
-  AlertTriangle, 
-  CheckCircle, 
-  Clock, 
+import {
+  Shield,
+  AlertTriangle,
+  CheckCircle,
+  Clock,
   TrendingUp,
   Activity
 } from 'lucide-react';
@@ -20,6 +20,7 @@ import {
 } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
+import ChatWidget from '@/components/chat/ChatWidget';
 
 export default function Dashboard() {
   const [selectedUsage, setSelectedUsage] = useState<IdentityUsage | null>(null);
@@ -119,6 +120,11 @@ export default function Dashboard() {
       {/* Suspicious Activity Map */}
       <div className="animate-slide-up" style={{ animationDelay: '700ms' }}>
         <SuspiciousMap attempts={mockSuspiciousAttempts} />
+      </div>
+
+      {/* AI Assistant */}
+      <div className="animate-slide-up" style={{ animationDelay: '900ms' }}>
+        <ChatWidget title="Dashboard Assistant" />
       </div>
 
       {/* Recent Activity */}

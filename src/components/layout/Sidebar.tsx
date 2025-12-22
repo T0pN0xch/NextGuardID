@@ -1,20 +1,22 @@
 import { NavLink } from 'react-router-dom';
-import { 
-  LayoutDashboard, 
-  ListChecks, 
-  FileKey, 
-  Link2, 
+import {
+  LayoutDashboard,
+  ListChecks,
+  FileKey,
+  Link2,
   Settings,
   ChevronLeft,
   ChevronRight,
   ShieldAlert,
-  MapPin
+  MapPin,
+  User
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 
 const navItems = [
+  { icon: User, label: 'Profile', path: '/profile' },
   { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard' },
   { icon: ShieldAlert, label: 'Suspicious Activity', path: '/suspicious' },
   { icon: MapPin, label: 'MyKad Lost Tracking', path: '/mykad-tracking' },
@@ -28,7 +30,7 @@ export function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
 
   return (
-    <aside 
+    <aside
       className={cn(
         "glass-elevated h-[calc(100vh-4rem)] sticky top-16 border-r border-border/50 transition-all duration-300",
         collapsed ? "w-16" : "w-64"

@@ -76,19 +76,12 @@ export const LoginForm = forwardRef<HTMLDivElement, LoginFormProps>(({ onLogin }
     // Simulate OTP verification
     await new Promise(resolve => setTimeout(resolve, 1500));
 
-    if (otpCode === expectedOTP) {
-      toast({
-        title: "Authentication Successful",
-        description: "Welcome to NextGuard ID!",
-      });
-      onLogin(icNumber || '880101145678');
-    } else {
-      toast({
-        title: "Invalid Code",
-        description: "The authenticator code is incorrect. Please try again.",
-        variant: "destructive",
-      });
-    }
+    // Accept any 6-digit code - no validation against hardcoded OTP
+    toast({
+      title: "Authentication Successful",
+      description: "Welcome to NextGuard ID!",
+    });
+    onLogin(icNumber || '880101145678');
 
     setIsLoading(false);
   };
@@ -254,7 +247,7 @@ export const LoginForm = forwardRef<HTMLDivElement, LoginFormProps>(({ onLogin }
 
                 <div className="bg-secondary/30 rounded-lg p-4 border border-border/50">
                   <p className="text-xs text-muted-foreground text-center">
-                    <span className="font-semibold text-foreground">Demo Mode:</span> Use code <span className="font-mono text-primary font-bold">{expectedOTP}</span> to login
+                    <span className="font-semibold text-foreground">Demo Mode:</span> Enter any 6-digit code to proceed
                   </p>
                 </div>
 

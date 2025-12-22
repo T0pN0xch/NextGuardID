@@ -16,6 +16,8 @@ export const CONTRACT_ADDRESS = "0xb81988826bA44D5657309690b79a1137786cEb3d";
 
 // Polygon Amoy RPC
 const RPC_URL = "https://rpc-amoy.polygon.technology/";
+// Deployment tx (used to limit query range)
+const DEPLOYMENT_TX_HASH = "0xb15d52612c755ea139ef4f3aebff5630dff5e6025dab65834d4b616c9d0a6c5a";
 
 class BlockchainService {
   constructor() {
@@ -28,6 +30,7 @@ class BlockchainService {
     this.signer = null;
     // expose contract address on the service instance for existing frontend code
     this.CONTRACT_ADDRESS = CONTRACT_ADDRESS;
+    this._deploymentBlock = null;
   }
 
   // Connect wallet (for demo, we'll simulate)
@@ -45,10 +48,57 @@ class BlockchainService {
     return ethers.keccak256(ethers.toUtf8Bytes(mykadNumber));
   }
 
+  // Upload JSON data to IPFS via web3.storage (Vite env: VITE_WEB3_STORAGE_TOKEN)
+  async uploadToIPFS(jsonObj) {
+    const token = typeof window !== 'undefined' ? import.meta.env.VITE_WEB3_STORAGE_TOKEN : process.env.VITE_WEB3_STORAGE_TOKEN;
+    if (!token) {
+      throw new Error('Missing VITE_WEB3_STORAGE_TOKEN environment variable for IPFS upload');
+    }
+
+    const body = JSON.stringify(jsonObj);
+
+    const res = await fetch('https://api.web3.storage/upload', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/octet-stream'
+      },
+      body: new Blob([body], { type: 'application/json' })
+    });
+
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(`IPFS upload failed: ${res.status} ${text}`);
+    }
+
+    const data = await res.json();
+    return data.cid; // return the CID
+  }
+
+  // Determine the block number where the contract was deployed (caches result)
+  async getDeploymentBlock() {
+    if (this._deploymentBlock) return this._deploymentBlock;
+    try {
+      const receipt = await this.provider.getTransactionReceipt(DEPLOYMENT_TX_HASH);
+      if (receipt && receipt.blockNumber) {
+        this._deploymentBlock = receipt.blockNumber;
+        return this._deploymentBlock;
+      }
+    } catch (e) {
+      console.warn('Could not fetch deployment receipt:', e.message || e);
+    }
+    return 0;
+  }
+
   // Mock blockchain interaction (for hackathon demo)
   async logConsent(userMyKad, platform, action) {
+    // If wallet is connected, prefer real on-chain logging
+    if (this.signer) {
+      return this.logConsentReal(userMyKad, platform, action);
+    }
+
     const userHash = this.hashMyKad(userMyKad);
-    
+
     // For demo - return mock transaction
     const mockTx = {
       hash: "0x" + Math.random().toString(16).substring(2, 66),
@@ -59,7 +109,7 @@ class BlockchainService {
       action: action,
       etherscanUrl: `https://amoy.polygonscan.com/tx/0x${Math.random().toString(16).substring(2, 66)}`
     };
-    
+
     console.log("📝 Mock blockchain log:", mockTx);
     return mockTx;
   }
@@ -88,17 +138,58 @@ class BlockchainService {
     };
   }
 
+  // Upload consent metadata to IPFS and then log on-chain (requires wallet connected)
+  async logConsentWithIPFS(userMyKad, platform, action, metadataObj) {
+    const cid = await this.uploadToIPFS(metadataObj);
+    const ipfsHash = cid;
+    const txResult = await this.logConsentReal(userMyKad, platform, action, ipfsHash);
+    return { ...txResult, ipfsHash };
+  }
+
   // Get events for a user
   async getUserEvents(userMyKad) {
     const userHash = this.hashMyKad(userMyKad);
     
     try {
-      // For demo - return mock events
-      return this.getDemoEvents(userHash);
+      // If provider is available, query on-chain events for this user
+      const fromBlock = await this.getDeploymentBlock();
+
+      const filters = [
+        this.contract.filters.IdentityUsed(userHash),
+        this.contract.filters.ConsentGranted(userHash),
+        this.contract.filters.ConsentRevoked(userHash)
+      ];
+
+      const eventsArrays = await Promise.all(filters.map(f => this.contract.queryFilter(f, fromBlock, 'latest')));
+      const events = eventsArrays.flat();
+
+      // enrich events with timestamps and normalized fields
+      const enriched = await Promise.all(events.map(async (evt) => {
+        const block = await this.provider.getBlock(evt.blockNumber);
+        const args = evt.args || [];
+        return {
+          userHash: args.userHash || args[0],
+          platformId: args.platformId || args[1] || args.platform || '',
+          actionType: args.actionType || args[2] || evt.event || '',
+          timestamp: block ? block.timestamp : undefined,
+          ipfsHash: args.ipfsHash || args[3] || '',
+          txHash: evt.transactionHash,
+          blockNumber: evt.blockNumber,
+          etherscanUrl: this.getEtherscanLink('tx', evt.transactionHash)
+        };
+      }));
+
+      // Sort descending
+      enriched.sort((a, b) => (b.blockNumber || 0) - (a.blockNumber || 0));
+
+      // If no events found for the user on-chain, fall back to demo events for UI clarity
+      if (!enriched || enriched.length === 0) {
+        console.warn(`No on-chain events found for user ${userHash}, returning demo events.`);
+        return this.getDemoEvents(userHash);
+      }
+
+      return enriched;
       
-      // Real implementation:
-      // const filter = this.contract.filters.IdentityUsed(userHash);
-      // return await this.contract.queryFilter(filter, 0, 'latest');
     } catch (error) {
       console.error("Error fetching events:", error);
       return this.getDemoEvents(userHash);

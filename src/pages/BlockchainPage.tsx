@@ -1,9 +1,15 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { BlockchainLog } from '@/components/blockchain/BlockchainLog';
-import { mockBlockchainRecords } from '@/data/mockData';
+import blockchainService from '@/utils/blockchain';
+import { BlockchainRecord } from '@/types/identity';
+// Fallback deployment info (inlined to avoid JSON import issues in the client build)
+const DEPLOYMENT_TX_HASH = '0xb15d52612c755ea139ef4f3aebff5630dff5e6025dab65834d4b616c9d0a6c5a';
+const DEPLOYER_ADDRESS = '0x327eae26Bbd018Fde88595E8A8559D9703922Cd0';
+const DEPLOYMENT_TIMESTAMP = '2025-12-21T22:59:40.522Z';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Search, Box, Shield, RefreshCw, ExternalLink, HardDrive } from 'lucide-react';
+import { Search, Box, Shield, RefreshCw, ExternalLink, HardDrive, Copy } from 'lucide-react';
+import { toast } from '@/hooks/use-toast';
 import { ConsentStatus } from '@/types/identity';
 import {
   Select,
@@ -13,23 +19,89 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
-export default function BlockchainPage() {
+interface BlockchainPageProps {
+  userIc?: string;
+}
+
+export default function BlockchainPage({ userIc }: BlockchainPageProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<ConsentStatus | 'all'>('all');
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  const filteredRecords = mockBlockchainRecords.filter((record) => {
-    const matchesSearch = 
-      record.platform.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      record.transactionHash.toLowerCase().includes(searchQuery.toLowerCase());
+  // Seed with a couple of sample "real" records (deployment tx + one consent example)
+  const sampleRecords: BlockchainRecord[] = [
+    {
+      id: 'r-deploy',
+      transactionHash: DEPLOYMENT_TX_HASH,
+      timestamp: new Date(DEPLOYMENT_TIMESTAMP),
+      platform: 'Contract Deployment',
+      action: 'Contract Deployed',
+      consentStatus: 'granted',
+      blockNumber: 0,
+      verified: true,
+      ipfsHash: undefined,
+      ipfsGateway: undefined,
+    },
+    {
+      id: 'r-sample-consent',
+      transactionHash: '0x' + Math.random().toString(16).slice(2, 66),
+      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24),
+      platform: 'Shopee Malaysia',
+      action: 'Consent Granted',
+      consentStatus: 'granted',
+      blockNumber: 18234567,
+      verified: true,
+      ipfsHash: 'QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco',
+      ipfsGateway: 'https://ipfs.io/ipfs/',
+    }
+  ];
+
+  const [records, setRecords] = useState<BlockchainRecord[]>(sampleRecords);
+
+  // compute derived stats
+  const latestBlock = records.reduce((m, r) => Math.max(m, r.blockNumber || 0), 0);
+
+  useEffect(() => {
+    // fetch on mount
+    handleRefresh();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const filteredRecords = records.filter((record) => {
+    const platform = record.platform || '';
+    const tx = record.transactionHash || '';
+    const matchesSearch = platform.toLowerCase().includes(searchQuery.toLowerCase()) || tx.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesStatus = statusFilter === 'all' || record.consentStatus === statusFilter;
     return matchesSearch && matchesStatus;
   });
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    setIsRefreshing(false);
+    try {
+      // Use the provided user IC (or fall back) to fetch on-chain events
+      const subjectId = userIc || 'demo-user';
+      const events = await blockchainService.getUserEvents(subjectId);
+      const mapped = events.map((ev, idx) => {
+        const extractedHash = ev.txHash || ev.transactionHash || ev.hash || (ev.etherscanUrl ? String(ev.etherscanUrl).split('/').pop() : '');
+        return {
+          id: `r${idx}`,
+          transactionHash: extractedHash || '',
+          timestamp: ev.timestamp ? new Date(ev.timestamp * (ev.timestamp > 1e12 ? 1 : 1000)) : new Date(),
+          platform: ev.platformId || ev.platform || '',
+          action: ev.actionType || ev.action || '',
+          consentStatus: (ev.actionType || ev.action || '').toLowerCase().includes('revoke') ? 'revoked' : 'granted',
+          blockNumber: ev.blockNumber || 0,
+          verified: true,
+          ipfsHash: ev.ipfsHash || undefined,
+          ipfsGateway: ev.ipfsHash ? `https://ipfs.io/ipfs/` : undefined,
+        };
+      });
+      setRecords(mapped);
+    } catch (err) {
+      console.error('Failed to sync on-chain records', err);
+    } finally {
+      setIsRefreshing(false);
+    }
   };
 
   return (
@@ -53,7 +125,7 @@ export default function BlockchainPage() {
               <Box className="w-5 h-5 text-primary" />
             </div>
             <div>
-              <p className="text-2xl font-bold">{mockBlockchainRecords.length}</p>
+              <p className="text-2xl font-bold">{records.length}</p>
               <p className="text-sm text-muted-foreground">Total Transactions</p>
             </div>
           </div>
@@ -64,7 +136,7 @@ export default function BlockchainPage() {
               <Shield className="w-5 h-5 text-success" />
             </div>
             <div>
-              <p className="text-2xl font-bold">{mockBlockchainRecords.filter(r => r.verified).length}</p>
+              <p className="text-2xl font-bold">{records.filter(r => r.verified).length}</p>
               <p className="text-sm text-muted-foreground">Verified</p>
             </div>
           </div>
@@ -75,7 +147,7 @@ export default function BlockchainPage() {
               <Box className="w-5 h-5 text-accent" />
             </div>
             <div>
-              <p className="text-2xl font-bold">18.2M</p>
+              <p className="text-2xl font-bold">{latestBlock ? latestBlock.toLocaleString() : '—'}</p>
               <p className="text-sm text-muted-foreground">Latest Block</p>
             </div>
           </div>
@@ -86,7 +158,7 @@ export default function BlockchainPage() {
               <HardDrive className="w-5 h-5 text-accent" />
             </div>
             <div>
-              <p className="text-2xl font-bold">{mockBlockchainRecords.filter(r => r.ipfsHash).length}</p>
+              <p className="text-2xl font-bold">{records.filter(r => r.ipfsHash).length}</p>
               <p className="text-sm text-muted-foreground">IPFS Stored</p>
             </div>
           </div>
@@ -95,9 +167,9 @@ export default function BlockchainPage() {
 
       {/* Explorer Links */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <a 
-          href="https://etherscan.io" 
-          target="_blank" 
+        <a
+          href="https://amoy.polygonscan.com"
+          target="_blank"
           rel="noopener noreferrer"
           className="glass-elevated rounded-xl p-4 flex items-center gap-3 hover:scale-[1.02] transition-transform"
         >
@@ -106,12 +178,12 @@ export default function BlockchainPage() {
           </div>
           <div>
             <p className="text-sm font-medium">Blockchain Explorer</p>
-            <p className="text-xs text-muted-foreground">View on Etherscan →</p>
+            <p className="text-xs text-muted-foreground">View on Polygonscan (Amoy) →</p>
           </div>
         </a>
-        <a 
-          href="https://ipfs.io" 
-          target="_blank" 
+        <a
+          href="https://ipfs.io"
+          target="_blank"
           rel="noopener noreferrer"
           className="glass-elevated rounded-xl p-4 flex items-center gap-3 hover:scale-[1.02] transition-transform"
         >
@@ -123,6 +195,34 @@ export default function BlockchainPage() {
             <p className="text-xs text-muted-foreground">Decentralized Storage →</p>
           </div>
         </a>
+      </div>
+
+      {/* Contract Info */}
+      <div className="glass-elevated rounded-xl p-4 mt-4 flex items-center justify-between">
+        <div>
+          <h4 className="text-sm font-medium">Contract</h4>
+          <p className="text-xs text-muted-foreground mt-1">Address</p>
+          <div className="flex items-center gap-3 mt-2">
+            <code className="text-xs font-mono text-primary bg-primary/10 px-2 py-1 rounded truncate">{blockchainService.CONTRACT_ADDRESS}</code>
+            <button
+              onClick={() => { navigator.clipboard.writeText(blockchainService.CONTRACT_ADDRESS); toast({ title: 'Copied', description: 'Contract address copied to clipboard.' }); }}
+              className="p-2 rounded hover:bg-muted"
+            >
+              <Copy className="w-4 h-4" />
+            </button>
+            <a href={`https://amoy.polygonscan.com/address/${blockchainService.CONTRACT_ADDRESS}`} target="_blank" rel="noreferrer" className="p-2 rounded hover:bg-muted">
+              <ExternalLink className="w-4 h-4" />
+            </a>
+          </div>
+
+          <p className="text-xs text-muted-foreground mt-3">Deployer</p>
+          <div className="flex items-center gap-3 mt-2">
+            <code className="text-xs font-mono text-muted-foreground bg-muted px-2 py-1 rounded truncate">{DEPLOYER_ADDRESS}</code>
+            <a href={`https://amoy.polygonscan.com/tx/${DEPLOYMENT_TX_HASH}`} target="_blank" rel="noreferrer" className="p-2 rounded hover:bg-muted">
+              <ExternalLink className="w-4 h-4" />
+            </a>
+          </div>
+        </div>
       </div>
 
       {/* Filters */}
@@ -137,7 +237,7 @@ export default function BlockchainPage() {
               className="pl-10"
             />
           </div>
-          
+
           <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as ConsentStatus | 'all')}>
             <SelectTrigger className="w-[160px]">
               <SelectValue placeholder="Status" />
@@ -179,7 +279,7 @@ export default function BlockchainPage() {
 
       {/* Results Count */}
       <div className="text-sm text-muted-foreground">
-        Showing {filteredRecords.length} of {mockBlockchainRecords.length} transactions
+        Showing {filteredRecords.length} of {records.length} transactions
       </div>
 
       {/* Blockchain Log */}

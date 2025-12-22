@@ -23,8 +23,13 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { toast } from '@/hooks/use-toast';
+import blockchainService from '@/utils/blockchain';
 
-export default function ConsentPage() {
+interface ConsentPageProps {
+  userIc?: string;
+}
+
+export default function ConsentPage({ userIc }: ConsentPageProps) {
   const [consents, setConsents] = useState<ConsentRecord[]>(mockConsentRecords);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<ConsentStatus | 'all'>('all');
@@ -55,23 +60,57 @@ export default function ConsentPage() {
   };
 
   const confirmAction = () => {
-    if (actionDialog.type === 'revoke' && actionDialog.consentId) {
-      setConsents(prev => prev.map(c => 
-        c.id === actionDialog.consentId 
-          ? { ...c, status: 'revoked' as ConsentStatus, canRevoke: false, canDelete: false }
-          : c
-      ));
-      toast({
-        title: "Access Revoked",
-        description: `${actionDialog.serviceName} no longer has access to your data. This action has been recorded on the blockchain.`,
-      });
-    } else if (actionDialog.type === 'delete' && actionDialog.consentId) {
-      toast({
-        title: "Deletion Request Submitted",
-        description: `A request to delete your data from ${actionDialog.serviceName} has been submitted. You will be notified when complete.`,
-      });
-    }
-    setActionDialog({ type: null, consentId: null, serviceName: '' });
+    (async () => {
+      if (actionDialog.type === 'revoke' && actionDialog.consentId) {
+        const consent = consents.find(c => c.id === actionDialog.consentId);
+        try {
+          // ensure wallet connected
+          if (!blockchainService.signer) {
+            await blockchainService.connectWallet();
+          }
+
+          const metadata = {
+            serviceName: actionDialog.serviceName,
+            action: 'CONSENT_REVOKED',
+            timestamp: new Date().toISOString(),
+            dataTypes: consent?.dataTypes || []
+          };
+
+          const subjectId = userIc || 'demo-user';
+          const tx = await blockchainService.logConsentWithIPFS(subjectId, actionDialog.serviceName, 'CONSENT_REVOKED', metadata);
+
+          setConsents(prev => prev.map(c =>
+            c.id === actionDialog.consentId
+              ? { ...c, status: 'revoked' as ConsentStatus, canRevoke: false, canDelete: false, blockchainHash: tx.hash, ipfsHash: tx.ipfsHash }
+              : c
+          ));
+
+          toast({
+            title: "Access Revoked",
+            description: `${actionDialog.serviceName} no longer has access to your data. Tx: ${tx.hash}`,
+          });
+        } catch (err) {
+          console.error('Blockchain revoke failed', err);
+          // fallback to local state update if blockchain call fails
+          setConsents(prev => prev.map(c =>
+            c.id === actionDialog.consentId
+              ? { ...c, status: 'revoked' as ConsentStatus, canRevoke: false, canDelete: false }
+              : c
+          ));
+          toast({
+            title: "Access Revoked (Local)",
+            description: `${actionDialog.serviceName} marked revoked locally. Blockchain update failed.`,
+            variant: 'destructive'
+          });
+        }
+      } else if (actionDialog.type === 'delete' && actionDialog.consentId) {
+        toast({
+          title: "Deletion Request Submitted",
+          description: `A request to delete your data from ${actionDialog.serviceName} has been submitted. You will be notified when complete.`,
+        });
+      }
+      setActionDialog({ type: null, consentId: null, serviceName: '' });
+    })();
   };
 
   const handleViewBlockchain = (hash: string) => {
@@ -79,7 +118,7 @@ export default function ConsentPage() {
       title: "Blockchain Record",
       description: `Transaction hash: ${hash.slice(0, 20)}...`,
     });
-    window.open(`https://etherscan.io/tx/${hash}`, '_blank');
+    window.open(`https://amoy.polygonscan.com/tx/${hash}`, '_blank');
   };
 
   return (
@@ -138,7 +177,7 @@ export default function ConsentPage() {
               className="pl-10"
             />
           </div>
-          
+
           <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as ConsentStatus | 'all')}>
             <SelectTrigger className="w-[160px]">
               <SelectValue placeholder="Status" />
@@ -168,8 +207,8 @@ export default function ConsentPage() {
       </div>
 
       {/* Action Confirmation Dialog */}
-      <AlertDialog 
-        open={actionDialog.type !== null} 
+      <AlertDialog
+        open={actionDialog.type !== null}
         onOpenChange={() => setActionDialog({ type: null, consentId: null, serviceName: '' })}
       >
         <AlertDialogContent className="glass-elevated border-border/50">
@@ -178,7 +217,7 @@ export default function ConsentPage() {
               {actionDialog.type === 'revoke' ? 'Revoke Access' : 'Request Data Deletion'}
             </AlertDialogTitle>
             <AlertDialogDescription>
-              {actionDialog.type === 'revoke' 
+              {actionDialog.type === 'revoke'
                 ? `Are you sure you want to revoke ${actionDialog.serviceName}'s access to your personal data? This action will be recorded on the blockchain and cannot be undone.`
                 : `Are you sure you want to request deletion of your data from ${actionDialog.serviceName}? This process may take up to 30 days.`
               }
@@ -186,7 +225,7 @@ export default function ConsentPage() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction 
+            <AlertDialogAction
               onClick={confirmAction}
               className={actionDialog.type === 'delete' ? 'bg-destructive text-destructive-foreground hover:bg-destructive/90' : ''}
             >
