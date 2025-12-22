@@ -159,29 +159,6 @@ For support, please reach out to the project maintainers or open an issue in the
 
 **Version**: 1.0.0  
 **Last Updated**: December 2025
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
 
 ## Blockchain / IPFS configuration
 
@@ -193,6 +170,8 @@ Required environment variables (Vite):
 
 ```bash
 VITE_WEB3_STORAGE_TOKEN=your_web3_storage_token_here
+```
+
 ## AI Assistant (optional)
 
 This project includes a local Express proxy at `server/chat-proxy.js` which forwards chat and summarization requests to Google's Gemini (Generative AI) endpoints. To enable it:
@@ -215,18 +194,17 @@ The dashboard and Suspicious Activity pages include a small chat widget that pos
 Security note: Never store API keys in client-side env vars (VITE_ prefix). Use a server-side proxy like the included `server/chat-proxy.js` and keep keys out of version control.
 
 If you've pasted your API key into the chat here, rotate it immediately — do NOT commit keys to the repository.
-```
 
-Wallet / signing:
+## Wallet / Signing
 
 - For real on-chain writes (granting/revoking consent) you must connect a browser wallet (MetaMask or similar) configured for the Polygon Amoy Testnet.
 - The frontend will attempt to call `window.ethereum` and request accounts. After connecting, actions like revoking consent will upload metadata to IPFS and then call the contract.
 
-Explorer / network:
+## Explorer / Network
 
 - Transactions and contract verification use `https://amoy.polygonscan.com` (Polygon Amoy Testnet).
 
-Notes:
+## Notes
 
 - If a wallet is not connected or the user declines, the app will fall back to demo/mock behavior.
 - The deployed contract address is recorded in `blockchain/deployment-info.json` and is used by the frontend.
