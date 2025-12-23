@@ -238,11 +238,6 @@ export default function SuspiciousActivityPage() {
           )}
         </DialogContent>
       </Dialog>
-
-      {/* Assistant for this page */}
-      <div className="mt-6">
-        <ChatWidget title="Suspicious Activity Assistant" />
-      </div>
     </div>
   );
 }

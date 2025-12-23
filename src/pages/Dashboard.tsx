@@ -52,7 +52,7 @@ Overall Security Score: 85/100 (GOOD - Above Average)
 High-Risk Platforms: ${mockDashboardStats.highRiskPlatforms} platform(s) requiring immediate attention
   - These platforms have elevated security risks
   - May use outdated security protocols or have weak access controls
-
+  
 Suspicious Activity Detection:
   - Total Attempts Detected: ${mockSuspiciousAttempts.length}
   - Successfully Blocked: ${mockSuspiciousAttempts.filter(a => a.blocked).length} attempts (System protected you)
@@ -141,35 +141,14 @@ PRIORITY 3 - ONGOING:
   }, []);
 
   return (
-    <div className="space-y-8 p-6">
-      <div>
-        <h1 className="text-2xl font-bold">Dashboard</h1>
-        <p className="text-muted-foreground">Monitor your digital identity usage across platforms</p>
+    <div className="space-y-8 p-6 bg-white">
+      <div className="mb-8">
+        <h1 className="text-4xl font-bold text-gray-900">Dashboard</h1>
+        <p className="text-lg text-gray-600 mt-2">Monitor your digital identity usage across platforms</p>
       </div>
 
-      {/* AI Summary Section */}
-      <Card className="glass-elevated border-border/50 bg-gradient-to-r from-primary/10 to-cyan-500/10 animate-slide-up">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-primary" />
-            Page Summary
-          </CardTitle>
-          <CardDescription>AI-powered analysis of your dashboard</CardDescription>
-        </CardHeader>
-        <CardContent>
-          {loadingSummary ? (
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <Loader2 className="w-4 h-4 animate-spin" />
-              <span>Generating summary...</span>
-            </div>
-          ) : (
-            <p className="text-foreground leading-relaxed">{summary}</p>
-          )}
-        </CardContent>
-      </Card>
-
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatsCard
           title="Total Platforms"
           value={mockDashboardStats.totalPlatforms}
@@ -203,102 +182,118 @@ PRIORITY 3 - ONGOING:
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <div className="glass-elevated rounded-xl p-5 animate-slide-up" style={{ animationDelay: '400ms' }}>
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-lg bg-success/20 flex items-center justify-center">
-              <TrendingUp className="w-5 h-5 text-success" />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="bg-white rounded-2xl p-8 border-2 border-emerald-200 shadow-lg hover:shadow-2xl hover:shadow-emerald-500/30 transition-all duration-300 animate-slide-up hover:-translate-y-2" style={{ animationDelay: '400ms' }}>
+          <div className="flex items-center gap-4 mb-6">
+            <div className="w-14 h-14 rounded-2xl bg-emerald-100 flex items-center justify-center">
+              <TrendingUp className="w-7 h-7 text-emerald-600" />
             </div>
-            <h3 className="font-semibold">Identity Health</h3>
+            <h3 className="text-xl font-bold text-gray-900">Identity Health</h3>
           </div>
-          <div className="flex items-baseline gap-2">
-            <span className="text-4xl font-bold text-success">85%</span>
-            <span className="text-sm text-muted-foreground">Security Score</span>
+          <div className="mb-4">
+            <div className="flex items-baseline gap-3">
+              <span className="text-5xl font-bold text-emerald-600">85%</span>
+              <span className="text-base text-gray-600 font-medium">Security Score</span>
+            </div>
           </div>
-          <p className="text-sm text-muted-foreground mt-2">
-            Your identity is well protected. Consider reviewing high-risk platforms.
-          </p>
+          <div className="bg-emerald-50 rounded-xl p-4 border border-emerald-200">
+            <p className="text-sm text-gray-700 font-medium">
+              ✓ Your identity is well protected. Consider reviewing high-risk platforms.
+            </p>
+          </div>
         </div>
 
-        <div className="glass-elevated rounded-xl p-5 animate-slide-up" style={{ animationDelay: '500ms' }}>
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-lg bg-warning/20 flex items-center justify-center">
-              <Clock className="w-5 h-5 text-warning" />
+        <div className="bg-white rounded-2xl p-8 border-2 border-amber-200 shadow-lg hover:shadow-2xl hover:shadow-amber-500/30 transition-all duration-300 animate-slide-up hover:-translate-y-2" style={{ animationDelay: '500ms' }}>
+          <div className="flex items-center gap-4 mb-6">
+            <div className="w-14 h-14 rounded-2xl bg-amber-100 flex items-center justify-center">
+              <Clock className="w-7 h-7 text-amber-600" />
             </div>
-            <h3 className="font-semibold">Inactive Accounts</h3>
+            <h3 className="text-xl font-bold text-gray-900">Inactive Accounts</h3>
           </div>
-          <div className="flex items-baseline gap-2">
-            <span className="text-4xl font-bold text-warning">{mockDashboardStats.inactiveAccounts}</span>
-            <span className="text-sm text-muted-foreground">accounts</span>
+          <div className="mb-4">
+            <div className="flex items-baseline gap-3">
+              <span className="text-5xl font-bold text-amber-600">{mockDashboardStats.inactiveAccounts}</span>
+              <span className="text-base text-gray-600 font-medium">accounts</span>
+            </div>
           </div>
-          <p className="text-sm text-muted-foreground mt-2">
-            Consider revoking access for unused platforms.
-          </p>
+          <div className="bg-amber-50 rounded-xl p-4 border border-amber-200">
+            <p className="text-sm text-gray-700 font-medium">
+              ⚠️ Consider revoking access for unused platforms.
+            </p>
+          </div>
         </div>
 
-        <div className="glass-elevated rounded-xl p-5 animate-slide-up" style={{ animationDelay: '600ms' }}>
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center">
-              <Activity className="w-5 h-5 text-primary" />
+        <div className="bg-white rounded-2xl p-8 border-2 border-blue-200 shadow-lg hover:shadow-2xl hover:shadow-blue-500/30 transition-all duration-300 animate-slide-up hover:-translate-y-2" style={{ animationDelay: '600ms' }}>
+          <div className="flex items-center gap-4 mb-6">
+            <div className="w-14 h-14 rounded-2xl bg-blue-100 flex items-center justify-center">
+              <Activity className="w-7 h-7 text-blue-600" />
             </div>
-            <h3 className="font-semibold">Last Activity</h3>
+            <h3 className="text-xl font-bold text-gray-900">Last Activity</h3>
           </div>
-          <div className="flex items-baseline gap-2">
-            <span className="text-lg font-bold">Maybank2u</span>
+          <div className="mb-4">
+            <span className="text-2xl font-bold text-blue-600">Maybank2u</span>
           </div>
-          <p className="text-sm text-muted-foreground mt-2">
-            Login verified 2 hours ago via MyDigital ID
-          </p>
+          <div className="bg-blue-50 rounded-xl p-4 border border-blue-200">
+            <p className="text-sm text-gray-700 font-medium">
+              ✓ Login verified 2 hours ago via MyDigital ID
+            </p>
+          </div>
         </div>
       </div>
+
+      {/* Separator Line */}
+      <div className="h-1 bg-gradient-to-r from-blue-200 via-cyan-200 to-emerald-200 rounded-full my-4"></div>
 
       {/* Suspicious Activity Map */}
       <div className="animate-slide-up" style={{ animationDelay: '700ms' }}>
         <SuspiciousMap attempts={mockSuspiciousAttempts} />
       </div>
 
+      {/* Separator Line */}
+      <div className="h-1 bg-gradient-to-r from-blue-200 via-cyan-200 to-emerald-200 rounded-full my-4"></div>
+
       {/* Recent Activity */}
       <div className="animate-slide-up" style={{ animationDelay: '800ms' }}>
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold">Recent Identity Usage</h2>
-          <a href="/usage" className="text-sm text-primary hover:underline">View all →</a>
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-2xl font-bold text-gray-900">Recent Identity Usage</h2>
+          <a href="/usage" className="text-base text-blue-600 font-semibold hover:text-blue-700 hover:underline transition-colors">View all →</a>
         </div>
         <UsageTimeline usages={recentUsages} onViewDetails={setSelectedUsage} />
       </div>
 
       {/* Detail Dialog */}
       <Dialog open={!!selectedUsage} onOpenChange={() => setSelectedUsage(null)}>
-        <DialogContent className="glass-elevated border-border/50 max-w-lg">
+        <DialogContent className="bg-white border-2 border-gray-200 shadow-2xl max-w-lg rounded-3xl">
           {selectedUsage && (
             <>
               <DialogHeader>
-                <DialogTitle className="flex items-center gap-3">
-                  <span className="text-3xl">{selectedUsage.serviceIcon}</span>
+                <DialogTitle className="flex items-center gap-4 text-2xl font-bold">
+                  <span className="text-5xl">{selectedUsage.serviceIcon}</span>
                   {selectedUsage.serviceName}
                 </DialogTitle>
               </DialogHeader>
-              <div className="space-y-4">
-                <div>
-                  <p className="text-sm text-muted-foreground">Category</p>
-                  <p className="font-medium">{selectedUsage.category}</p>
+              <div className="space-y-6 mt-6">
+                <div className="pb-4 border-b-2 border-gray-200">
+                  <p className="text-xs font-bold text-gray-500 uppercase tracking-wide">Category</p>
+                  <p className="text-lg font-bold text-gray-900 mt-2">{selectedUsage.category}</p>
+                </div>
+                <div className="pb-4 border-b-2 border-gray-200">
+                  <p className="text-xs font-bold text-gray-500 uppercase tracking-wide">Purpose</p>
+                  <p className="text-lg font-bold text-gray-900 mt-2">{selectedUsage.purpose}</p>
+                </div>
+                <div className="pb-4 border-b-2 border-gray-200">
+                  <p className="text-xs font-bold text-gray-500 uppercase tracking-wide">Registration Date</p>
+                  <p className="text-lg font-bold text-gray-900 mt-2">{format(selectedUsage.dateTime, 'PPP')}</p>
+                </div>
+                <div className="pb-4 border-b-2 border-gray-200">
+                  <p className="text-xs font-bold text-gray-500 uppercase tracking-wide">Last Accessed</p>
+                  <p className="text-lg font-bold text-gray-900 mt-2">{format(selectedUsage.lastAccessed, 'PPP')}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">Purpose</p>
-                  <p className="font-medium">{selectedUsage.purpose}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Registration Date</p>
-                  <p className="font-medium">{format(selectedUsage.dateTime, 'PPP')}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Last Accessed</p>
-                  <p className="font-medium">{format(selectedUsage.lastAccessed, 'PPP')}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground mb-2">Data Shared</p>
-                  <div className="flex flex-wrap gap-1">
+                  <p className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-3">Data Shared</p>
+                  <div className="flex flex-wrap gap-2">
                     {selectedUsage.dataShared.map((data) => (
-                      <Badge key={data} variant="secondary">{data}</Badge>
+                      <Badge key={data} className="bg-blue-100 text-blue-700 text-sm font-semibold px-3 py-2 rounded-lg">{data}</Badge>
                     ))}
                   </div>
                 </div>

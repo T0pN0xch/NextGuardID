@@ -3,31 +3,107 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { LoginForm } from '@/components/auth/LoginForm';
 import { Header } from '@/components/layout/Header';
 import { Sidebar } from '@/components/layout/Sidebar';
+import { MyKadUsageConfirmation } from '@/components/mykad/MyKadUsageConfirmation';
 import Dashboard from '@/pages/Dashboard';
 import SuspiciousActivityPage from '@/pages/SuspiciousActivityPage';
-import MyKadLostTrackingPage from '@/pages/MyKadLostTrackingPage';
+import MyKadAuditTrailPage from '@/pages/MyKadAuditTrailPage';
+import AuditTrailPage from '@/pages/AuditTrailPage';
 import UsagePage from '@/pages/UsagePage';
 import ConsentPage from '@/pages/ConsentPage';
-import BlockchainPage from '@/pages/BlockchainPage';
 import SettingsPage from '@/pages/SettingsPage';
 import ProfilePage from '@/pages/ProfilePage';
+import { MyKadUsageConfirmationRequest } from '@/types/identity';
+import { mockHealthcareInstitutions } from '@/data/mockData';
+import blockchainService from '@/utils/blockchain';
 
 
 const Index = forwardRef<HTMLDivElement>((_, ref) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userIc, setUserIc] = useState('');
   const [userName, setUserName] = useState('');
+  const [confirmationRequest, setConfirmationRequest] = useState<MyKadUsageConfirmationRequest | null>(null);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const handleLogin = (icNumber: string) => {
     setUserIc(icNumber);
     setUserName('Ahmad bin Abdullah');
     setIsAuthenticated(true);
+    // Show approval popup after 1 minute of login
+    setTimeout(() => {
+      showMockConfirmationRequest();
+    }, 60000); // 1 minute = 60000 milliseconds
+  };
+
+  const showMockConfirmationRequest = () => {
+    const mockRequest: MyKadUsageConfirmationRequest = {
+      id: `req_${Date.now()}`,
+      institution: mockHealthcareInstitutions[0],
+      action: 'registration',
+      purpose: 'Patient Registration - New Account Creation',
+      timestamp: new Date(),
+      location: 'Kuala Lumpur, Malaysia',
+      expiresIn: 120,
+    };
+    setConfirmationRequest(mockRequest);
+    setShowConfirmation(true);
+  };
+
+  const handleApprove = async (requestId: string) => {
+    setIsProcessing(true);
+    try {
+      // Record MyKad usage on blockchain with IPFS
+      if (confirmationRequest) {
+        const usageMetadata = {
+          requestId: requestId,
+          institution: confirmationRequest.institution.name,
+          action: confirmationRequest.action,
+          purpose: confirmationRequest.purpose,
+          location: confirmationRequest.location,
+          timestamp: new Date().toISOString(),
+          status: 'approved',
+          userConsent: 'given'
+        };
+
+        // Record on blockchain with IPFS storage
+        const result = await blockchainService.logConsentWithIPFS(
+          userIc,
+          confirmationRequest.institution.name,
+          'MYKAD_USAGE_APPROVED',
+          usageMetadata
+        );
+
+        console.log('✅ MyKad usage recorded on blockchain:', result);
+        console.log('📦 IPFS Hash:', result.ipfsHash);
+        console.log('🔗 Transaction:', result.etherscanUrl);
+      }
+
+      setShowConfirmation(false);
+    } catch (error) {
+      console.error('Failed to record MyKad usage:', error);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleDeny = (requestId: string) => {
+    setIsProcessing(true);
+    setTimeout(() => {
+      console.log('MyKad usage denied:', requestId);
+      setShowConfirmation(false);
+      setIsProcessing(false);
+    }, 1000);
   };
 
   const handleLogout = () => {
     setIsAuthenticated(false);
     setUserIc('');
     setUserName('');
+    setShowConfirmation(false);
+  };
+
+  const handleUpdateUserName = (newName: string) => {
+    setUserName(newName);
   };
 
   if (!isAuthenticated) {
@@ -44,15 +120,24 @@ const Index = forwardRef<HTMLDivElement>((_, ref) => {
             <Route path="/" element={<Navigate to="/consent" replace />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/suspicious" element={<SuspiciousActivityPage />} />
-            <Route path="/mykad-tracking" element={<MyKadLostTrackingPage />} />
+            <Route path="/mykad-audit-trail" element={<MyKadAuditTrailPage />} />
+            <Route path="/audit-trail" element={<AuditTrailPage />} />
             <Route path="/usage" element={<UsagePage />} />
             <Route path="/consent" element={<ConsentPage userIc={userIc} />} />
-            <Route path="/blockchain" element={<BlockchainPage userIc={userIc} />} />
-            <Route path="/profile" element={<ProfilePage userName={userName} userIc={userIc} />} />
+            <Route path="/profile" element={<ProfilePage userName={userName} userIc={userIc} onUpdateUserName={handleUpdateUserName} />} />
             <Route path="/settings" element={<SettingsPage userName={userName} icNumber={userIc} />} />
           </Routes>
         </main>
       </div>
+
+      {/* MyKad Usage Confirmation Modal */}
+      <MyKadUsageConfirmation
+        isOpen={showConfirmation}
+        request={confirmationRequest}
+        onApprove={handleApprove}
+        onDeny={handleDeny}
+        isLoading={isProcessing}
+      />
     </div>
   );
 });

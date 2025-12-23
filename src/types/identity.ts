@@ -65,3 +65,40 @@ export interface SuspiciousAttempt {
   riskScore: number;
   blocked: boolean;
 }
+export interface HealthcareInstitution {
+  id: string;
+  name: string;
+  type: 'hospital' | 'clinic' | 'specialist' | 'pharmacy' | 'lab';
+  location: string;
+  contactNumber: string;
+  registeredDate: Date;
+  isVerified: boolean;
+}
+
+export type MyKadAuditAction = 'registration' | 'record_access' | 'verification' | 'consent_approval' | 'emergency_access';
+export type MyKadAuditStatus = 'approved' | 'denied' | 'pending' | 'emergency_used';
+
+export interface MyKadAuditEvent {
+  id: string;
+  timestamp: Date;
+  institution: HealthcareInstitution;
+  action: MyKadAuditAction;
+  purpose: string;
+  status: MyKadAuditStatus;
+  blockchainHash: string;
+  blockNumber: number;
+  verified: boolean;
+  ipAddress?: string;
+  location?: string;
+  expiresAt?: Date;
+}
+
+export interface MyKadUsageConfirmationRequest {
+  id: string;
+  institution: HealthcareInstitution;
+  action: MyKadAuditAction;
+  purpose: string;
+  timestamp: Date;
+  location: string;
+  expiresIn: number; // seconds
+}

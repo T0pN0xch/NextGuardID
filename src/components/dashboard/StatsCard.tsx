@@ -14,48 +14,57 @@ interface StatsCardProps {
 }
 
 const variantStyles = {
-  default: 'from-secondary to-muted',
-  primary: 'from-primary/20 to-cyan-500/20',
-  warning: 'from-warning/20 to-amber-500/20',
-  danger: 'from-destructive/20 to-red-500/20',
-  success: 'from-success/20 to-emerald-500/20',
+  default: 'bg-white border-gray-200',
+  primary: 'bg-white border-blue-200',
+  warning: 'bg-white border-amber-200',
+  danger: 'bg-white border-red-200',
+  success: 'bg-white border-emerald-200',
 };
 
 const iconVariantStyles = {
-  default: 'from-secondary to-muted text-foreground',
-  primary: 'from-primary to-cyan-500 text-primary-foreground',
-  warning: 'from-warning to-amber-500 text-warning-foreground',
-  danger: 'from-destructive to-red-600 text-destructive-foreground',
-  success: 'from-success to-emerald-500 text-success-foreground',
+  default: 'bg-gray-100 text-gray-700',
+  primary: 'bg-blue-100 text-blue-600',
+  warning: 'bg-amber-100 text-amber-600',
+  danger: 'bg-red-100 text-red-600',
+  success: 'bg-emerald-100 text-emerald-600',
+};
+
+const shadowVariants = {
+  default: 'hover:shadow-gray-500/30',
+  primary: 'hover:shadow-blue-500/30',
+  warning: 'hover:shadow-amber-500/30',
+  danger: 'hover:shadow-red-500/30',
+  success: 'hover:shadow-emerald-500/30',
 };
 
 export function StatsCard({ title, value, icon: Icon, trend, variant = 'default', delay = 0 }: StatsCardProps) {
   return (
-    <div 
+    <div
       className={cn(
-        "glass-elevated rounded-xl p-5 animate-slide-up group hover:scale-[1.02] transition-transform duration-300",
-        `bg-gradient-to-br ${variantStyles[variant]}`
+        "rounded-2xl p-8 animate-slide-up group hover:shadow-2xl transition-all duration-300 border-2 hover:-translate-y-2",
+        variantStyles[variant],
+        shadowVariants[variant]
       )}
       style={{ animationDelay: `${delay}ms` }}
     >
       <div className="flex items-start justify-between">
-        <div>
-          <p className="text-sm text-muted-foreground font-medium">{title}</p>
-          <p className="text-3xl font-bold mt-1">{value}</p>
+        <div className="flex-1">
+          <p className="text-sm font-bold text-gray-600 uppercase tracking-wide">{title}</p>
+          <p className="text-5xl font-bold text-gray-900 mt-3">{value}</p>
           {trend && (
             <p className={cn(
-              "text-xs mt-2 flex items-center gap-1",
-              trend.isPositive ? "text-success" : "text-destructive"
+              "text-sm mt-4 flex items-center gap-1 font-bold",
+              trend.isPositive ? "text-emerald-600" : "text-red-600"
             )}>
               {trend.isPositive ? '↑' : '↓'} {Math.abs(trend.value)}% from last month
             </p>
           )}
         </div>
         <div className={cn(
-          "w-12 h-12 rounded-xl bg-gradient-to-br flex items-center justify-center shadow-lg transition-transform group-hover:scale-110",
+          "w-16 h-16 rounded-2xl flex items-center justify-center shadow-lg transition-transform group-hover:scale-110 group-hover:rotate-6",
           iconVariantStyles[variant]
         )}>
-          <Icon className="w-6 h-6" />
+          <Icon className="w-8 h-8" />
         </div>
       </div>
     </div>

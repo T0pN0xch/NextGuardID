@@ -9,7 +9,9 @@ import {
   ChevronRight,
   ShieldAlert,
   MapPin,
-  User
+  User,
+  Lock,
+  History
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -19,10 +21,10 @@ const navItems = [
   { icon: User, label: 'Profile', path: '/profile' },
   { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard' },
   { icon: ShieldAlert, label: 'Suspicious Activity', path: '/suspicious' },
-  { icon: MapPin, label: 'MyKad Lost Tracking', path: '/mykad-tracking' },
+  { icon: Lock, label: 'MyKad Audit Trail', path: '/mykad-audit-trail' },
+  { icon: History, label: 'Audit History', path: '/audit-trail' },
   { icon: ListChecks, label: 'ID Usage', path: '/usage' },
   { icon: FileKey, label: 'Consent', path: '/consent' },
-  { icon: Link2, label: 'Blockchain', path: '/blockchain' },
   { icon: Settings, label: 'Settings', path: '/settings' },
 ];
 
