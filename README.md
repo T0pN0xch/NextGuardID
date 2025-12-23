@@ -6,7 +6,7 @@
 
 ---
 
-## 🏛️ The Core Problem It Solves
+## 🏛️ Core Problem It Solves
 
 **The Challenge:**
 - MyKad is one of the most critical identity documents in Malaysia
@@ -23,76 +23,194 @@ NextGuard ID creates an **immutable blockchain-based audit trail** paired with *
 ## ✨ Key Features & What They Do
 
 ### 1. Real-Time MyKad Usage Confirmation Modal
-When any institution (hospital, bank, government office, etc.) requests access to a citizen's MyKad, a professional confirmation dialog appears showing:
-- Which institution is requesting
-- Why they need access (purpose)
-- When and where the request is happening
-- User can **Approve** or **Deny** in real-time
+**What It Does:**
+- When any institution (hospital, bank, government office, etc.) requests access to a citizen's MyKad, a beautiful confirmation dialog appears on their device
+- Displays clear information: which institution is requesting, why, when, and where
+- User can **Approve** or **Deny** the request in real-time
+- If approved, the usage is immediately recorded on the blockchain
+- If denied, the institution is blocked and the denial is logged
 
-**Why It Matters:** Prevents unauthorized MyKad usage before it happens; citizens maintain explicit control over their identity.
+**Why It Matters:**
+- Prevents unauthorized MyKad usage before it happens
+- Citizens maintain explicit control over their identity
+- Creates immediate audit trail for every access attempt
+
+**Healthcare Example:**
+```
+Patient at Hospital: "I need to register"
+  ↓
+Hospital requests MyKad access
+  ↓
+Modal appears on patient's phone:
+  "Kuala Lumpur Hospital requests your MyKad
+   Purpose: Patient Registration
+   Time: Dec 23, 2025, 10:30 AM
+   Location: Kuala Lumpur"
+  ↓
+Patient clicks "Approve"
+  ↓
+Access approved & recorded on blockchain
+```
+
+---
 
 ### 2. Blockchain-Based Immutable Audit Trail
-Every MyKad usage event is recorded on the **Polygon blockchain** with:
-- Institution name and verification status
-- Action type (registration, record access, verification, consent approval, emergency access)
-- Complete timestamp and location
-- User approval/denial decision
-- IPFS link to detailed metadata
-- Permanent, verifiable proof of what happened
+**What It Does:**
+- Records every MyKad usage event on the **Polygon blockchain**
+- Each event includes: institution name, action type, purpose, timestamp, location, user approval/denial
+- Records are stored on **IPFS** (decentralized storage) and linked to blockchain transactions
+- Users can view their complete audit trail anytime
+- No single entity controls the records; they're immutable and permanently verifiable
 
-**Why It Matters:** 
-- **Fraud Prevention:** If MyKad is lost, blockchain proves when it happened
-- **Dispute Resolution:** Blockchain proof of whether you authorized access
-- **Regulatory Compliance:** Full audit trail for BNM (Bank Negara Malaysia) and PDPC
-- **Citizen Trust:** Complete transparency builds confidence
+**Key Events Tracked:**
+- ✅ Registration - Patient/customer registration
+- ✅ Record Access - Accessing medical/banking records
+- ✅ Verification - Identity verification requests
+- ✅ Consent Approval - User approves service use
+- ⚠️ Emergency Access - Special high-priority access (e.g., medical emergency)
+- ❌ Denied - User blocks unwanted requests
+
+**Why It Matters:**
+- **Fraud Prevention:** If MyKad is lost, you have blockchain proof of when it happened
+- **Dispute Resolution:** "Did you authorize this bank account opening?" Answer: Check the blockchain
+- **Regulatory Compliance:** Full audit trail satisfies BNM (Bank Negara Malaysia), PDPC (Personal Data Protection Commissioner)
+- **Citizen Trust:** Complete transparency builds confidence in institutions
+
+---
 
 ### 3. Personal Dashboard & Analytics
-- Statistics dashboard showing approved/denied/emergency accesses
-- Geographic map of where MyKad was used
+**What It Does:**
+- Shows statistics: approved accesses, denied requests, emergency access events
+- Displays geographic map of where MyKad was used
 - Timeline visualization of usage patterns
+- Dark/light theme support for user preference
 - Real-time alerts for suspicious activity
-- Dark/light theme support
+
+**Healthcare Example:**
+```
+Your MyKad Usage This Month:
+- Hospital Registrations: 3 approved, 0 denied
+- Medical Record Access: 2 approved
+- Emergency Access: 1 (approved)
+- Verification Requests: 4 approved
+
+Suspicious Activity Check:
+- All accesses within Malaysia ✓
+- All institutions verified ✓
+- No unusual patterns detected ✓
+```
+
+---
 
 ### 4. Consent Management & Tracking
-- Grant or revoke consent for institutions to access MyKad
+**What It Does:**
+- Users can grant or revoke consent for institutions to access their MyKad
 - View which institutions have active consent
-- See purpose and duration of each consent
+- See purpose and duration of each consent grant
+- Instant notifications when consent is requested
 - Complete consent history on blockchain
 
+---
+
 ### 5. MyKad Lost/Stolen Tracking
-- Report MyKad as lost and blockchain shows exact last valid usage
+**What It Does:**
+- If MyKad is lost, user reports it
+- System shows exact timestamp of the last valid usage
 - Any subsequent usages are flagged as potentially fraudulent
-- Provide blockchain evidence to police with immutable timestamps
-- Insurance claims can be substantiated with records
+- User can provide blockchain evidence to police
+- Insurance claims can be substantiated with immutable records
+
+**Scenario Example:**
+```
+Jan 10, 2025: Report MyKad Lost
+  ↓
+Blockchain shows:
+  - Last valid usage: Jan 9, 3:00 PM at Hospital XYZ (user approved)
+  - Any usage after Jan 10 = Fraudulent and recorded on blockchain
+  ↓
+Jan 15: Fraudulent bank account opened
+  → Blockchain timestamp proves you didn't authorize it
+  → Evidence provided to police and bank
+  → Insurance covers loss
+```
+
+---
 
 ### 6. Multi-Industry Support (Extensible Architecture)
-**Currently implemented:** Healthcare
-**Easily deployable to:** Banking, Government, Education, Telecommunications, Retail, Insurance, Travel
+**Current Implementation:** Healthcare
+**Easily Deployable To:**
 
-The architecture is identity-agnostic and works with any ID system. Each industry can define its own action types while using the same blockchain infrastructure.
+- **Banking:** Account opening, loan applications, credit checks
+- **Government:** License renewals, permit applications, official records
+- **Education:** University enrollment, exam registration, certificate issuance
+- **Telecommunications:** SIM card registration, plan activation
+- **Retail:** Loyalty program enrollment, age-restricted purchases
+- **Insurance:** Policy applications, claims processing
+- **Travel:** Airline check-in, hotel registration, visa applications
+
+**Why It Works Across Industries:**
+- Architecture is identity-agnostic; works with any ID system (MyKad, NRIC, passport, etc.)
+- Blockchain records events, not industry-specific data
+- Each industry can define its own "action types" and "purposes"
+- Same real-time confirmation modal works everywhere
 
 ---
 
 ## 🔒 Security & Privacy Architecture
 
-**What Gets Recorded on Blockchain:**
-✅ Timestamp ✅ Institution name & verified status ✅ Action type ✅ Purpose ✅ User approval/denial ✅ Location ✅ IPFS hash ✅ Transaction hash
+### What Gets Recorded on Blockchain:
+✅ Timestamp (when request happened)
+✅ Institution name & verified status
+✅ Action type (registration, record access, etc.)
+✅ Purpose of access (patient registration, etc.)
+✅ User's approval/denial decision
+✅ Location of request
+✅ IPFS hash (link to detailed metadata)
+✅ Transaction hash (immutable proof)
 
-**What Does NOT Get Recorded:**
-❌ Medical records or health information ❌ Financial account details ❌ Passwords or credentials ❌ Biometric data ❌ Personal health information (PHI)
+### What Does NOT Get Recorded:
+❌ Medical records or health information
+❌ Financial account details or balances
+❌ Passwords or authentication credentials
+❌ Biometric data (fingerprints, face scans)
+❌ Personal health information (PHI)
+❌ Protected health information (HIPAA equivalent)
 
-**Compliance:** PDPA (Personal Data Protection Act Malaysia), healthcare privacy regulations, Blockchain used for transparency only—not for sensitive data storage.
+**Why This Matters:**
+- Compliant with **PDPA** (Personal Data Protection Act Malaysia)
+- Compliant with healthcare privacy regulations
+- Blockchain is used for transparency, not sensitive data storage
+- User privacy is protected while maintaining accountability
 
 ---
 
 ## 🛠️ Technical Architecture
 
 ```
-Frontend (React + TypeScript)          Backend (Node.js + Express)         Blockchain & Storage
-├─ Dashboard                           ├─ API Endpoints                     ├─ Polygon Blockchain
-├─ Audit Trail Viewer                  ├─ IPFS Integration                  ├─ IPFS (Pinata)
-├─ Confirmation Modal                  ├─ Blockchain Interaction            └─ Smart Contracts
-└─ Theme Support                       └─ Authentication
+┌──────────────────────────────────┐
+│      Frontend (React + TypeScript) │
+│  - Dashboard                      │
+│  - Audit Trail Viewer             │
+│  - Real-time Confirmation Modal   │
+│  - Theme Support (Dark/Light)     │
+└──────────────┬───────────────────┘
+               │ HTTP/REST API
+               ▼
+┌──────────────────────────────────┐
+│    Backend (Node.js + Express)   │
+│  - API Endpoints                 │
+│  - IPFS Integration              │
+│  - Blockchain Interaction        │
+│  - Authentication & Authorization│
+└──────────────┬───────────────────┘
+               │
+      ┌────────┴────────┐
+      ▼                 ▼
+┌──────────────┐  ┌──────────────┐
+│   Polygon    │  │    IPFS      │
+│  Blockchain  │  │  (Pinata)    │
+│  (Amoy Test) │  │  Storage     │
+└──────────────┘  └──────────────┘
 ```
 
 **Technology Stack:**
@@ -100,29 +218,109 @@ Frontend (React + TypeScript)          Backend (Node.js + Express)         Block
 - **Backend:** Node.js, Express.js
 - **Blockchain:** Polygon (Ethereum Layer 2), Solidity smart contracts
 - **Storage:** Pinata IPFS for decentralized metadata storage
+- **Database:** Mock data (production: PostgreSQL/MongoDB)
 
 ---
 
 ## 📊 How It Helps Secure the MyKad
 
-| Problem | Traditional Approach | NextGuard Solution |
-|---------|-------------------|------------------|
-| **MyKad Lost/Stolen** | No record of who used it | Blockchain timestamp shows exactly when lost |
-| **Unauthorized Usage** | Find out later when fraud happens | Real-time confirmation prevents it immediately |
-| **Identity Fraud** | Word against institution | Blockchain proves whether you approved |
-| **Suspicious Patterns** | Discover months later | Dashboard shows all usage, spot patterns instantly |
-| **Privacy & Control** | Institutions collect data; you have no visibility | You explicitly approve each access |
+### Problem 1: MyKad Lost/Stolen
+**Traditional Approach:**
+- No record of who used it after loss
+- Fraud happens with no evidence
+- Hard to prove for insurance claims
+
+**NextGuard Solution:**
+- Blockchain timestamp shows exactly when last used by you
+- All subsequent uses are recorded and traceable
+- You have immutable evidence for police and insurance
+
+---
+
+### Problem 2: Unauthorized Usage
+**Traditional Approach:**
+- Someone uses your MyKad without permission
+- You only find out later when fraud is discovered
+- Hard to prove you didn't authorize it
+
+**NextGuard Solution:**
+- Real-time confirmation appears when anyone requests MyKad
+- You deny unauthorized requests immediately
+- Denial is recorded on blockchain as evidence
+
+---
+
+### Problem 3: Identity Fraud
+**Traditional Approach:**
+- Institution claims you opened account/applied for loan
+- Your word against theirs
+- No independent verification
+
+**NextGuard Solution:**
+- Blockchain proves whether you approved the request
+- If you deny, blockchain records your denial
+- Institution cannot claim you authorized if blockchain shows denial
+
+---
+
+### Problem 4: Suspicious Patterns
+**Traditional Approach:**
+- You don't know if someone is systematically stealing your identity
+- Discover fraud months later after damage is done
+
+**NextGuard Solution:**
+- Dashboard shows all MyKad usage in one place
+- Spot unusual patterns immediately (different city, same time as you, etc.)
+- Alerts notify you of suspicious activity
+- Block before it becomes fraud
+
+---
+
+### Problem 5: Privacy & Control
+**Traditional Approach:**
+- Institutions collect MyKad data; you have no visibility
+- No way to know how long they keep it
+- Can't control who else accesses it
+
+**NextGuard Solution:**
+- You explicitly approve each access
+- See exactly which institutions have used your MyKad
+- Can revoke consent anytime
+- Complete transparency of data flow
 
 ---
 
 ## 🌍 Multi-Industry Implementation Roadmap
 
-- **Phase 1 (Current):** Healthcare - Hospital registration, medical records, specialist verification
-- **Phase 2:** Banking & Finance - Account opening, loan applications, credit checks
-- **Phase 3:** Government Services - License renewals, passport applications, welfare benefits
-- **Phase 4:** Telecommunications - SIM card registration, plan activation, billing
-- **Phase 5:** Education - University enrollment, exam registration, scholarships
-- **Phase 6:** Retail & Consumer Services - Loyalty programs, age-restricted purchases, returns
+**Phase 1 (Current):** Healthcare
+- Hospital registration, medical records access, specialist verification
+- Example: Patient approves before hospital accesses MyKad
+
+**Phase 2:** Banking & Finance
+- Account opening, loan applications, credit checks
+- Example: Customer approves before bank pulls MyKad data for KYC
+
+**Phase 3:** Government Services
+- License renewals, passport applications, welfare benefits
+- Example: Citizen approves before government agency accesses record
+
+**Phase 4:** Telecommunications
+- SIM card registration, plan activation, billing
+- Example: Customer approves before telecom links MyKad to service
+
+**Phase 5:** Education
+- University enrollment, exam registration, scholarship applications
+- Example: Student approves before institution accesses academic record
+
+**Phase 6:** Retail & Consumer Services
+- Loyalty programs, age-restricted purchases, returns processing
+- Example: Customer approves before retailer uses MyKad for membership
+
+**Scalability:**
+- Same smart contract works for all industries
+- Each institution defines its own "action types"
+- No code changes needed; just configuration
+- Blockchain handles all records uniformly
 
 ---
 
@@ -130,28 +328,105 @@ Frontend (React + TypeScript)          Backend (Node.js + Express)         Block
 
 | Aspect | Traditional Systems | NextGuard ID |
 |--------|-------------------|--------------|
-| **MyKad Access Visibility** | None | Real-time confirmation with full details |
-| **User Control** | Zero | User approves/denies each request |
+| **MyKad Access Visibility** | None - used in background | Real-time confirmation with full details |
+| **User Control** | Zero - institutions decide | User approves/denies each request |
 | **Audit Trail** | Centralized, can be deleted | Blockchain, immutable forever |
 | **Fraud Proof** | Word against institution | Blockchain evidence |
 | **Multi-Industry** | System-specific | Universal, industry-agnostic |
 | **Privacy** | Data held by institutions | User controls all access |
-| **Compliance** | Partial alignment | Full regulatory compliance |
+| **Compliance** | Partial regulatory alignment | Full PDPA & healthcare compliance |
+| **Cost** | High infrastructure | Low (blockchain + IPFS) |
+| **Trust Model** | Trust institutions | Trust blockchain, not intermediaries |
 
 ---
 
-## 📱 Core Features (Traditional)
+## 🚀 How to Deploy to Other Industries
 
-- **User Authentication & Authorization** - Secure multi-factor authentication with OTP verification
-- **Personal Profile Management** - Comprehensive user profile with editable personal information
-- **Suspicious Activity Monitoring** - Real-time alerts and monitoring for unauthorized access attempts
-- **ID Usage Analytics** - Detailed logs and analytics of where and when your identity is being used
-- **Dashboard Analytics** - Comprehensive dashboard with activity statistics and security insights
-- **Dark/Light Theme Support** - User-friendly interface with theme customization
+**To add Banking:**
+1. Implement bank-specific "action types": `account_opening`, `loan_application`, `credit_check`
+2. Create `BankingInstitution` interface (extends `Institution`)
+3. Deploy smart contract instance for banking
+4. Configure API endpoints for banking use cases
+5. Train bank staff on approval workflows
+6. Launch with 1-2 pilot banks
+
+**To add Government:**
+1. Implement government "action types": `license_renewal`, `permit_application`
+2. Create `GovernmentAgency` interface
+3. Deploy contract for government module
+4. Set up government backend APIs
+5. Train agency staff
+6. Launch with government pilot
+
+**To add Telecommunications:**
+1. Similar process with telecom-specific action types
+2. Configure for rapid SIM registration workflows
+3. Train telecom staff
+
+**The Beauty:**
+- Core blockchain infrastructure is the same
+- Only configuration and UI change
+- Same security guarantees across all industries
+- One unified audit trail for citizen
 
 ---
 
-## 📁 Project Structure
+## 📈 Business Value & ROI
+
+**For Citizens:**
+- ✅ Complete control over their identity
+- ✅ Fraud prevention before it happens
+- ✅ Peace of mind through transparency
+- ✅ Evidence for disputes and insurance claims
+
+**For Institutions (Healthcare, Banks, etc.):**
+- ✅ Regulatory compliance (PDPA, KYC requirements)
+- ✅ Reduced fraud and chargebacks
+- ✅ Customer trust and confidence
+- ✅ Audit trail for compliance audits
+- ✅ Competitive advantage (shows commitment to privacy)
+
+**For Government:**
+- ✅ Reduced identity fraud
+- ✅ Better regulation enforcement
+- ✅ Citizen trust in digital government
+- ✅ Blockchain evidence for law enforcement
+- ✅ Fewer insurance fraud cases
+
+---
+
+## 🎯 Summary
+
+**NextGuard ID** is a **cross-industry digital identity protection platform** that transforms how identity data is secured and used. Instead of siloed, institution-controlled systems, it creates a **citizen-controlled, blockchain-verified ecosystem** where:
+
+1. **Citizens know exactly who's using their identity and when**
+2. **They approve/deny each usage in real-time**
+3. **All records are immutable and permanently verifiable**
+4. **They can prevent fraud before it happens**
+5. **They have proof for disputes and claims**
+6. **Works across healthcare, banking, government, telecom, education, retail, etc.**
+
+The platform prioritizes **security, privacy, transparency, and citizen control** while maintaining **simplicity and usability** for everyday people.
+
+### Tech Stack
+
+**Frontend:**
+- React 18+ with TypeScript
+- Vite for fast development and builds
+- Tailwind CSS for styling
+- shadcn/ui for accessible UI components
+- React Router for navigation
+- TanStack React Query for data fetching
+
+**Backend/Smart Contracts:**
+- Hardhat for Ethereum smart contract development
+- Solidity for blockchain contracts (IdentityAudit contract)
+
+**Additional:**
+- Node.js runtime
+- npm/bun for package management
+
+### Project Structure
 
 ```
 ├── src/
