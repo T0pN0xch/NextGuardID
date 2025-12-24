@@ -2,17 +2,16 @@ import {
   Shield,
   AlertTriangle,
   CheckCircle,
-  Clock,
+  Lock,
   TrendingUp,
   Activity,
-  Sparkles,
-  Loader2
+  Ban,
+  Eye
 } from 'lucide-react';
 import { StatsCard } from '@/components/dashboard/StatsCard';
 import { UsageTimeline } from '@/components/dashboard/UsageTimeline';
-import { SuspiciousMap } from '@/components/dashboard/SuspiciousMap';
-import { mockIdentityUsages, mockDashboardStats, mockSuspiciousAttempts } from '@/data/mockData';
-import { useState, useEffect } from 'react';
+import { mockIdentityUsages, mockMyKadAuditEvents, mockSuspiciousAttempts } from '@/data/mockData';
+import { useState } from 'react';
 import { IdentityUsage } from '@/types/identity';
 import {
   Dialog,
@@ -21,221 +20,93 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { format } from 'date-fns';
 
 export default function Dashboard() {
   const [selectedUsage, setSelectedUsage] = useState<IdentityUsage | null>(null);
-  const [summary, setSummary] = useState<string>('');
-  const [loadingSummary, setLoadingSummary] = useState(false);
   const recentUsages = mockIdentityUsages.slice(0, 5);
-
-  // Auto-generate page summary on mount
-  useEffect(() => {
-    const generateSummary = async () => {
-      setLoadingSummary(true);
-      try {
-        const pageContent = `
-NEXTGUARD ID - COMPREHENSIVE DASHBOARD SECURITY ANALYSIS & ACTION PLAN
-
-=== YOUR IDENTITY PORTFOLIO OVERVIEW ===
-Total Registered Platforms: ${mockDashboardStats.totalPlatforms} platforms
-- Active Platforms: ${mockDashboardStats.activePlatforms} actively using your identity
-- Inactive/Unused: ${mockDashboardStats.inactiveAccounts} platforms (dormant)
-- New Registrations This Month: ${mockDashboardStats.recentRegistrations}
-
-=== SECURITY POSTURE & THREAT ASSESSMENT ===
-Overall Security Score: 85/100 (GOOD - Above Average)
-  - This score indicates good overall protection
-  - Room for improvement: Address high-risk platforms and suspicious attempts
-
-High-Risk Platforms: ${mockDashboardStats.highRiskPlatforms} platform(s) requiring immediate attention
-  - These platforms have elevated security risks
-  - May use outdated security protocols or have weak access controls
-  
-Suspicious Activity Detection:
-  - Total Attempts Detected: ${mockSuspiciousAttempts.length}
-  - Successfully Blocked: ${mockSuspiciousAttempts.filter(a => a.blocked).length} attempts (System protected you)
-  - Active/Unresolved: ${mockSuspiciousAttempts.filter(a => !a.blocked).length} attempt(s) needing review
-
-=== CURRENT STATUS & WHAT IT MEANS ===
-✓ Good News: Your identity has active protection with ${mockSuspiciousAttempts.filter(a => a.blocked).length} blocked attempts showing system effectiveness
-⚠ Needs Attention: ${mockDashboardStats.highRiskPlatforms} high-risk platform(s) and ${mockSuspiciousAttempts.filter(a => !a.blocked).length} unresolved suspicious attempt(s)
-◆ Improvement Opportunity: ${mockDashboardStats.inactiveAccounts} inactive account(s) still consuming your digital footprint
-
-=== RECOMMENDED ACTIONS (PRIORITY ORDER) ===
-
-PRIORITY 1 - URGENT (This Week):
-1. Review Suspicious Attempts:
-   - Check the ${mockSuspiciousAttempts.filter(a => !a.blocked).length} unresolved suspicious attempt(s) in the Suspicious Activity section
-   - Determine if these are legitimate access attempts or unauthorized activity
-   - Take action: Approve, Block, or Mark as Not Me
-
-2. Audit High-Risk Platforms:
-   - Identify the ${mockDashboardStats.highRiskPlatforms} high-risk platform(s) on your dashboard
-   - Review what data you've shared with these platforms
-   - Consider: Updating passwords, reviewing permissions, or revoking access if not actively used
-
-PRIORITY 2 - IMPORTANT (This Month):
-3. Clean Up Inactive Accounts:
-   - You have ${mockDashboardStats.inactiveAccounts} inactive account(s) that you're no longer using
-   - These still hold your personal data and pose unnecessary risk
-   - Action: Go to each inactive platform and revoke consent or close the account
-   - Expected result: Reduce security footprint and minimize data exposure
-
-4. Monitor Recent Registrations:
-   - Review your ${mockDashboardStats.recentRegistrations} new registration(s)
-   - Verify these are legitimate services you intended to join
-   - Ensure consent settings match your privacy expectations
-
-PRIORITY 3 - ONGOING:
-5. Maintain Current Security Practices:
-   - You've achieved an 85% security score - maintain current good practices
-   - Continue monitoring the Identity Usage section for unexpected activity
-   - Set reminders to review this dashboard monthly
-
-=== DASHBOARD NAVIGATION GUIDE ===
-- Suspicious Activity Map: Shows geographic location of login attempts (red/yellow pins)
-- Recent Identity Usage: Details of where your identity was used
-- Consent Page: See and revoke data sharing permissions
-- Profile Page: Update personal information and security settings
-- MyKad Lost Tracking: Monitor Touch 'n Go transactions if card lost
-
-=== NEXT STEPS ===
-1. Immediately review ${mockSuspiciousAttempts.filter(a => !a.blocked).length} unresolved suspicious attempt(s) in Suspicious Activity section
-2. This week: Audit ${mockDashboardStats.highRiskPlatforms} high-risk platform(s) and update security
-3. This month: Deactivate or close ${mockDashboardStats.inactiveAccounts} inactive account(s)
-4. Schedule monthly dashboard reviews to maintain 85%+ security score
-
-`;
-        const highRiskCount = mockSuspiciousAttempts.filter(a => !a.blocked).length;
-        const blockedCount = mockSuspiciousAttempts.filter(a => a.blocked).length;
-
-        const proxy = (window as any).__CHAT_PROXY_URL__ || 'http://localhost:3001';
-        const res = await fetch(`${proxy}/api/summarize`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ text: pageContent }),
-        });
-
-        if (res.ok) {
-          const data = await res.json();
-          setSummary(data.summary || getDetailedFallback());
-        } else {
-          setSummary(getDetailedFallback());
-        }
-      } catch (error) {
-        setSummary(getDetailedFallback());
-      } finally {
-        setLoadingSummary(false);
-      }
-    };
-
-    const getDetailedFallback = () => {
-      const highRiskCount = mockSuspiciousAttempts.filter(a => !a.blocked).length;
-      const blockedCount = mockSuspiciousAttempts.filter(a => a.blocked).length;
-      return `Dashboard Summary: You have ${mockDashboardStats.totalPlatforms} platforms with ${mockDashboardStats.activePlatforms} active and ${mockDashboardStats.inactiveAccounts} inactive. Security Score: 85% (Good). Current Issues: ${mockDashboardStats.highRiskPlatforms} high-risk platform(s), ${highRiskCount} unresolved suspicious attempt(s), ${blockedCount} successfully blocked. Immediate Actions: (1) Review ${highRiskCount} suspicious attempt(s) in Suspicious Activity section - determine if legitimate and take action; (2) Audit ${mockDashboardStats.highRiskPlatforms} high-risk platform(s) - review shared data and security settings; (3) Deactivate ${mockDashboardStats.inactiveAccounts} inactive account(s) - remove unused platforms from your digital footprint. Timeline: Address issues this week to improve security score. Monthly check-ins recommended to maintain protection.`;
-    };
-
-    generateSummary();
-  }, []);
+  const blockedAttempts = mockSuspiciousAttempts.filter(a => a.blocked).length;
+  const unblocked = mockSuspiciousAttempts.filter(a => !a.blocked).length;
+  const myKadEvents = mockMyKadAuditEvents.slice(0, 5);
 
   return (
-    <div className="space-y-8 p-6 bg-white">
+    <div className="space-y-8 p-6 bg-gradient-to-br from-gray-50 to-blue-50 min-h-screen">
+      {/* Header */}
       <div className="mb-8">
-        <h1 className="text-4xl font-bold text-gray-900">Dashboard</h1>
-        <p className="text-lg text-gray-600 mt-2">Monitor your digital identity usage across platforms</p>
+        <h1 className="text-4xl font-bold text-gray-900">NextGuard ID Dashboard</h1>
+        <p className="text-lg text-gray-600 mt-2">Monitor your MyKad usage & identity protection</p>
       </div>
 
-      {/* Stats Grid */}
+      {/* Key Metrics Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatsCard
-          title="Total Platforms"
-          value={mockDashboardStats.totalPlatforms}
-          icon={Shield}
-          variant="primary"
+          title="MyKad Approvals"
+          value={mockMyKadAuditEvents.filter(e => e.status === 'approved').length}
+          icon={CheckCircle}
+          variant="success"
           delay={0}
         />
         <StatsCard
-          title="Active Platforms"
-          value={mockDashboardStats.activePlatforms}
-          icon={CheckCircle}
-          variant="success"
-          trend={{ value: 12, isPositive: true }}
+          title="MyKad Denials"
+          value={mockMyKadAuditEvents.filter(e => e.status === 'denied').length}
+          icon={Ban}
+          variant="danger"
           delay={100}
         />
         <StatsCard
-          title="High Risk"
-          value={mockDashboardStats.highRiskPlatforms}
-          icon={AlertTriangle}
-          variant="danger"
+          title="Access Attempts Blocked"
+          value={blockedAttempts}
+          icon={Ban}
+          variant="primary"
           delay={200}
         />
         <StatsCard
-          title="Recent Registrations"
-          value={mockDashboardStats.recentRegistrations}
-          icon={Clock}
+          title="Unresolved Attempts"
+          value={unblocked}
+          icon={AlertTriangle}
           variant="warning"
-          trend={{ value: 5, isPositive: true }}
           delay={300}
         />
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-white rounded-2xl p-8 border-2 border-emerald-200 shadow-lg hover:shadow-2xl hover:shadow-emerald-500/30 transition-all duration-300 animate-slide-up hover:-translate-y-2" style={{ animationDelay: '400ms' }}>
           <div className="flex items-center gap-4 mb-6">
             <div className="w-14 h-14 rounded-2xl bg-emerald-100 flex items-center justify-center">
-              <TrendingUp className="w-7 h-7 text-emerald-600" />
+              <Lock className="w-7 h-7 text-emerald-600" />
             </div>
-            <h3 className="text-xl font-bold text-gray-900">Identity Health</h3>
+            <h3 className="text-xl font-bold text-gray-900">Blockchain Security</h3>
           </div>
           <div className="mb-4">
             <div className="flex items-baseline gap-3">
-              <span className="text-5xl font-bold text-emerald-600">85%</span>
-              <span className="text-base text-gray-600 font-medium">Security Score</span>
+              <span className="text-5xl font-bold text-emerald-600">{mockMyKadAuditEvents.length}</span>
+              <span className="text-base text-gray-600 font-medium">Immutable Records</span>
             </div>
           </div>
           <div className="bg-emerald-50 rounded-xl p-4 border border-emerald-200">
             <p className="text-sm text-gray-700 font-medium">
-              ✓ Your identity is well protected. Consider reviewing high-risk platforms.
+              ✓ All MyKad usage events recorded on blockchain with IPFS storage
             </p>
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl p-8 border-2 border-amber-200 shadow-lg hover:shadow-2xl hover:shadow-amber-500/30 transition-all duration-300 animate-slide-up hover:-translate-y-2" style={{ animationDelay: '500ms' }}>
-          <div className="flex items-center gap-4 mb-6">
-            <div className="w-14 h-14 rounded-2xl bg-amber-100 flex items-center justify-center">
-              <Clock className="w-7 h-7 text-amber-600" />
-            </div>
-            <h3 className="text-xl font-bold text-gray-900">Inactive Accounts</h3>
-          </div>
-          <div className="mb-4">
-            <div className="flex items-baseline gap-3">
-              <span className="text-5xl font-bold text-amber-600">{mockDashboardStats.inactiveAccounts}</span>
-              <span className="text-base text-gray-600 font-medium">accounts</span>
-            </div>
-          </div>
-          <div className="bg-amber-50 rounded-xl p-4 border border-amber-200">
-            <p className="text-sm text-gray-700 font-medium">
-              ⚠️ Consider revoking access for unused platforms.
-            </p>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-2xl p-8 border-2 border-blue-200 shadow-lg hover:shadow-2xl hover:shadow-blue-500/30 transition-all duration-300 animate-slide-up hover:-translate-y-2" style={{ animationDelay: '600ms' }}>
+        <div className="bg-white rounded-2xl p-8 border-2 border-blue-200 shadow-lg hover:shadow-2xl hover:shadow-blue-500/30 transition-all duration-300 animate-slide-up hover:-translate-y-2" style={{ animationDelay: '500ms' }}>
           <div className="flex items-center gap-4 mb-6">
             <div className="w-14 h-14 rounded-2xl bg-blue-100 flex items-center justify-center">
               <Activity className="w-7 h-7 text-blue-600" />
             </div>
-            <h3 className="text-xl font-bold text-gray-900">Last Activity</h3>
+            <h3 className="text-xl font-bold text-gray-900">MyDigital ID Status</h3>
           </div>
           <div className="mb-4">
-            <span className="text-2xl font-bold text-blue-600">Maybank2u</span>
+            <div className="flex items-center gap-3">
+              <div className="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></div>
+              <span className="text-2xl font-bold text-emerald-600">Verified & Active</span>
+            </div>
           </div>
           <div className="bg-blue-50 rounded-xl p-4 border border-blue-200">
             <p className="text-sm text-gray-700 font-medium">
-              ✓ Login verified 2 hours ago via MyDigital ID
+              ✓ Profile secured by Malaysia's government MyDigital ID system
             </p>
           </div>
         </div>
@@ -244,18 +115,72 @@ PRIORITY 3 - ONGOING:
       {/* Separator Line */}
       <div className="h-1 bg-gradient-to-r from-blue-200 via-cyan-200 to-emerald-200 rounded-full my-4"></div>
 
-      {/* Suspicious Activity Map */}
-      <div className="animate-slide-up" style={{ animationDelay: '700ms' }}>
-        <SuspiciousMap attempts={mockSuspiciousAttempts} />
+      {/* MyKad Audit Trail Section */}
+      <div className="animate-slide-up" style={{ animationDelay: '600ms' }}>
+        <div className="bg-white rounded-2xl border-2 border-purple-200 p-8 shadow-lg hover:shadow-2xl hover:shadow-purple-500/30 transition-all duration-300">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-4">
+              <div className="w-14 h-14 rounded-2xl bg-purple-100 flex items-center justify-center">
+                <Eye className="w-7 h-7 text-purple-600" />
+              </div>
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900">Recent MyKad Usage</h2>
+                <p className="text-sm text-gray-600">Verified access events from institutions</p>
+              </div>
+            </div>
+            <a href="/mykad-audit-trail" className="text-base text-blue-600 font-semibold hover:text-blue-700 hover:underline transition-colors">View all →</a>
+          </div>
+
+          {/* MyKad Events Table */}
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b-2 border-gray-200">
+                  <th className="text-left py-4 px-4 text-xs font-bold text-gray-600 uppercase">Institution</th>
+                  <th className="text-left py-4 px-4 text-xs font-bold text-gray-600 uppercase">Action</th>
+                  <th className="text-left py-4 px-4 text-xs font-bold text-gray-600 uppercase">Status</th>
+                  <th className="text-left py-4 px-4 text-xs font-bold text-gray-600 uppercase">Verified</th>
+                </tr>
+              </thead>
+              <tbody>
+                {myKadEvents.map((event) => (
+                  <tr key={event.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                    <td className="py-4 px-4">
+                      <p className="font-semibold text-gray-900">{event.institution.name}</p>
+                      <p className="text-xs text-gray-600 mt-1">{format(event.timestamp, 'MMM dd, yyyy')}</p>
+                    </td>
+                    <td className="py-4 px-4">
+                      <Badge className="bg-blue-100 text-blue-700 capitalize text-xs">
+                        {event.action.replace(/_/g, ' ')}
+                      </Badge>
+                    </td>
+                    <td className="py-4 px-4">
+                      <Badge className={event.status === 'approved' ? 'bg-emerald-100 text-emerald-700' : event.status === 'denied' ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700'}>
+                        {event.status.charAt(0).toUpperCase() + event.status.slice(1)}
+                      </Badge>
+                    </td>
+                    <td className="py-4 px-4">
+                      {event.verified ? (
+                        <span className="text-emerald-600 font-bold">✓ On Chain</span>
+                      ) : (
+                        <span className="text-gray-400">Pending</span>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
 
       {/* Separator Line */}
       <div className="h-1 bg-gradient-to-r from-blue-200 via-cyan-200 to-emerald-200 rounded-full my-4"></div>
 
-      {/* Recent Activity */}
-      <div className="animate-slide-up" style={{ animationDelay: '800ms' }}>
+      {/* General Identity Usage */}
+      <div className="animate-slide-up" style={{ animationDelay: '700ms' }}>
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold text-gray-900">Recent Identity Usage</h2>
+          <h2 className="text-2xl font-bold text-gray-900">General Identity Usage</h2>
           <a href="/usage" className="text-base text-blue-600 font-semibold hover:text-blue-700 hover:underline transition-colors">View all →</a>
         </div>
         <UsageTimeline usages={recentUsages} onViewDetails={setSelectedUsage} />

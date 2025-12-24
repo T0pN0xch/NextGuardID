@@ -1,4 +1,4 @@
-import { useState, forwardRef } from 'react';
+import { useState, forwardRef, useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { LoginForm } from '@/components/auth/LoginForm';
 import { Header } from '@/components/layout/Header';
@@ -18,12 +18,29 @@ import blockchainService from '@/utils/blockchain';
 
 
 const Index = forwardRef<HTMLDivElement>((_, ref) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [userIc, setUserIc] = useState('');
-  const [userName, setUserName] = useState('');
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    // Restore auth state from sessionStorage on mount
+    const stored = sessionStorage.getItem('isAuthenticated');
+    return stored === 'true';
+  });
+  const [userIc, setUserIc] = useState(() => {
+    return sessionStorage.getItem('userIc') || '';
+  });
+  const [userName, setUserName] = useState(() => {
+    return sessionStorage.getItem('userName') || '';
+  });
   const [confirmationRequest, setConfirmationRequest] = useState<MyKadUsageConfirmationRequest | null>(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+
+  // Persist auth state to sessionStorage whenever it changes
+  useEffect(() => {
+    sessionStorage.setItem('isAuthenticated', isAuthenticated.toString());
+    if (isAuthenticated && userIc) {
+      sessionStorage.setItem('userIc', userIc);
+      sessionStorage.setItem('userName', userName);
+    }
+  }, [isAuthenticated, userIc, userName]);
 
   const handleLogin = (icNumber: string) => {
     setUserIc(icNumber);
@@ -100,6 +117,10 @@ const Index = forwardRef<HTMLDivElement>((_, ref) => {
     setUserIc('');
     setUserName('');
     setShowConfirmation(false);
+    // Clear session storage on logout
+    sessionStorage.removeItem('isAuthenticated');
+    sessionStorage.removeItem('userIc');
+    sessionStorage.removeItem('userName');
   };
 
   const handleUpdateUserName = (newName: string) => {

@@ -374,6 +374,150 @@ class BlockchainService {
     return mockTx;
   }
 
+  // Record a MyKad usage event on-chain with real blockchain transaction
+  // This will upload metadata to IPFS and record the hash on-chain
+  async recordMyKadEvent(userMyKad, institution, action, details = {}) {
+    try {
+      console.log('🎫 Recording MyKad event to blockchain...');
+      
+      // Create metadata object for IPFS
+      const metadata = {
+        eventType: 'MyKad Usage',
+        userHash: this.hashMyKad(userMyKad),
+        institution: institution,
+        action: action,
+        timestamp: new Date().toISOString(),
+        details: details,
+        chainId: 80002, // Polygon Amoy testnet
+        recordedAt: new Date().toISOString()
+      };
+      
+      // Upload metadata to IPFS
+      console.log('📤 Uploading metadata to IPFS...');
+      const ipfsHash = await this.uploadToIPFS(metadata, 'mykad-audit');
+      console.log(`✅ Metadata uploaded to IPFS: ${ipfsHash}`);
+      
+      // If wallet is connected, record on-chain
+      if (this.isWalletConnected()) {
+        try {
+          console.log('📝 Recording on-chain with real transaction...');
+          const browserProvider = new ethers.BrowserProvider(window.ethereum);
+          const signer = await browserProvider.getSigner();
+          const contractWithSigner = this.contract.connect(signer);
+          
+          // Determine the appropriate contract method based on action
+          let tx;
+          const actionType = action.toUpperCase().replace(' ', '_');
+          
+          console.log(`   📋 Action Type: ${actionType}`);
+          console.log(`   🏥 Institution: ${institution}`);
+          console.log(`   📦 IPFS Hash: ${ipfsHash}`);
+          
+          // Log the identity usage on-chain
+          tx = await contractWithSigner.logIdentityUsage(
+            this.hashMyKad(userMyKad),
+            institution,
+            actionType,
+            ipfsHash
+          );
+          
+          console.log(`⏳ Transaction sent: ${tx.hash}`);
+          console.log('   Waiting for confirmation...');
+          
+          // Wait for transaction confirmation
+          const receipt = await tx.wait();
+          
+          console.log('✅ Transaction confirmed on-chain!');
+          console.log(`   Block: ${receipt.blockNumber}`);
+          console.log(`   Gas Used: ${receipt.gasUsed.toString()}`);
+          
+          return {
+            success: true,
+            transactionHash: tx.hash,
+            blockNumber: receipt.blockNumber,
+            ipfsHash: ipfsHash,
+            etherscanUrl: `https://amoy.polygonscan.com/tx/${tx.hash}`,
+            timestamp: Date.now(),
+            institution: institution,
+            action: action,
+            message: '✅ MyKad event recorded on blockchain successfully!'
+          };
+        } catch (blockchainError) {
+          console.error('❌ Blockchain recording failed:', blockchainError.message);
+          throw new Error(`Failed to record on blockchain: ${blockchainError.message}`);
+        }
+      } else {
+        console.warn('⚠️  Wallet not connected - event recorded to IPFS only');
+        return {
+          success: true,
+          ipfsHash: ipfsHash,
+          timestamp: Date.now(),
+          institution: institution,
+          action: action,
+          message: 'Event recorded to IPFS (connect wallet to record on-chain)'
+        };
+      }
+    } catch (error) {
+      console.error('❌ Error recording MyKad event:', error.message);
+      throw error;
+    }
+  }
+
+  // Fetch real MyKad events from blockchain for a specific user
+  async getMyKadEventsForUser(userMyKad) {
+    const userHash = this.hashMyKad(userMyKad);
+    
+    try {
+      console.log(`🔍 Fetching MyKad events for user hash: ${userHash}`);
+      const fromBlock = await this.getDeploymentBlock();
+
+      // Query all three event types for this user
+      const filters = [
+        this.contract.filters.IdentityUsed(userHash),
+        this.contract.filters.ConsentGranted(userHash),
+        this.contract.filters.ConsentRevoked(userHash)
+      ];
+
+      const eventsArrays = await Promise.all(filters.map(f => this.contract.queryFilter(f, fromBlock, 'latest')));
+      const events = eventsArrays.flat();
+
+      if (events.length === 0) {
+        console.log('ℹ️  No MyKad events found on blockchain for this user');
+        return [];
+      }
+
+      // Enrich events with timestamps and normalized fields
+      const enriched = await Promise.all(events.map(async (evt) => {
+        const block = await this.provider.getBlock(evt.blockNumber);
+        const args = evt.args || [];
+        
+        return {
+          id: `${evt.transactionHash}-${evt.logIndex}`,
+          userHash: args.userHash || args[0],
+          institution: args.platformId || args[1] || args.platform || 'Unknown Institution',
+          action: args.actionType || args[2] || evt.eventName || 'Identity Usage',
+          timestamp: block ? block.timestamp * 1000 : Date.now(),
+          ipfsHash: args.ipfsHash || args[3] || '',
+          transactionHash: evt.transactionHash,
+          blockNumber: evt.blockNumber,
+          etherscanUrl: `https://amoy.polygonscan.com/tx/${evt.transactionHash}`,
+          eventType: evt.eventName,
+          verified: true,
+          source: 'blockchain'
+        };
+      }));
+
+      // Sort by block number descending (newest first)
+      enriched.sort((a, b) => (b.blockNumber || 0) - (a.blockNumber || 0));
+
+      console.log(`✅ Found ${enriched.length} MyKad events for user`);
+      return enriched;
+    } catch (error) {
+      console.error('❌ Error fetching MyKad events from blockchain:', error.message);
+      return [];
+    }
+  }
+
   // Get ALL events from the contract (real Amoy Polygon data)
   async getAllContractEvents() {
     try {
@@ -623,6 +767,188 @@ class BlockchainService {
       return `https://amoy.polygonscan.com/tx/${hash}`;
     }
     return `https://amoy.polygonscan.com/address/${hash}`;
+  }
+
+  // Create real test blockchain events (seeds the blockchain with actual data)
+  async createRealTestEvents() {
+    if (!this.signer) {
+      throw new Error('❌ Wallet must be connected to create real blockchain events');
+    }
+
+    const testUserMyKad = '000000000000'; // Demo MyKad
+    const userHash = this.hashMyKad(testUserMyKad);
+    const testInstitutions = [
+      'UMMC Healthcare System',
+      'Ministry of Health',
+      'Bank Negara Malaysia',
+      'KPJ Healthcare',
+      'MySejahtera',
+      'Touch n Go eWallet'
+    ];
+    const testActions = [
+      'IDENTITY_USED',
+      'CONSENT_GRANTED',
+      'CONSENT_REVOKED'
+    ];
+
+    try {
+      console.log('🚀 Starting to create real blockchain test events...');
+      console.log('   User Hash:', userHash);
+      console.log('   Wallet Address:', await this.signer.getAddress());
+
+      const browserProvider = new ethers.BrowserProvider(window.ethereum);
+      const signerWithProvider = await browserProvider.getSigner();
+      const contractWithSigner = this.contract.connect(signerWithProvider);
+
+      const results = [];
+
+      // Create 6 test events
+      for (let i = 0; i < 6; i++) {
+        const institution = testInstitutions[i];
+        const action = testActions[i % testActions.length];
+        
+        // Create IPFS metadata
+        const metadata = {
+          userHash: userHash,
+          institution: institution,
+          action: action,
+          timestamp: new Date().toISOString(),
+          blockchainTest: true,
+          eventIndex: i + 1
+        };
+
+        try {
+          // Upload to IPFS
+          const ipfsHash = await this.uploadToIPFS(metadata, 'mykad-audit');
+          console.log(`📦 [${i + 1}/6] IPFS Hash:`, ipfsHash);
+
+          // Record on blockchain
+          console.log(`⏳ [${i + 1}/6] Submitting to blockchain: ${institution} - ${action}`);
+          
+          // Estimate gas first
+          try {
+            const gasEstimate = await contractWithSigner.logIdentityUsage.estimateGas(
+              userHash,
+              institution,
+              action,
+              ipfsHash
+            );
+            console.log(`   ⛽ Gas estimate: ${gasEstimate.toString()}`);
+          } catch (gasError) {
+            console.warn(`   ⚠️  Gas estimation warning: ${gasError.message}`);
+          }
+
+          // Send transaction with explicit gas limit
+          const tx = await contractWithSigner.logIdentityUsage(
+            userHash,
+            institution,
+            action,
+            ipfsHash,
+            {
+              gasLimit: '500000', // Set explicit gas limit
+              maxFeePerGas: ethers.parseUnits('100', 'gwei'), // Typical Amoy gas price
+              maxPriorityFeePerGas: ethers.parseUnits('50', 'gwei')
+            }
+          );
+
+          console.log(`   📝 Transaction Hash: ${tx.hash}`);
+          console.log(`   ⏳ Waiting for confirmation...`);
+          
+          const receipt = await tx.wait(1); // Wait for 1 block confirmation
+          
+          if (!receipt) {
+            throw new Error('Transaction receipt is null - transaction may have failed');
+          }
+
+          console.log(`   ✅ Confirmed in block ${receipt.blockNumber}`);
+          
+          results.push({
+            index: i + 1,
+            institution: institution,
+            action: action,
+            ipfsHash: ipfsHash,
+            transactionHash: tx.hash,
+            blockNumber: receipt.blockNumber,
+            etherscanUrl: `https://amoy.polygonscan.com/tx/${tx.hash}`,
+            status: 'confirmed'
+          });
+
+          // Add delay between transactions to avoid nonce issues
+          await new Promise(resolve => setTimeout(resolve, 3000));
+        } catch (txError) {
+          console.error(`   ❌ Error creating event ${i + 1}:`, txError);
+          
+          // Try to extract meaningful error message
+          let errorMsg = txError.message || 'Unknown error';
+          if (txError.code) {
+            errorMsg = `Error Code ${txError.code}: ${errorMsg}`;
+          }
+          if (txError.reason) {
+            errorMsg = txError.reason;
+          }
+          
+          // Log more details for debugging
+          if (txError.error) {
+            console.error('   Underlying error:', txError.error);
+          }
+          
+          results.push({
+            index: i + 1,
+            institution: institution,
+            action: action,
+            ipfsHash: metadata.ipfsHash || 'pending',
+            status: 'failed',
+            error: errorMsg,
+            details: 'Check browser console for full error details'
+          });
+        }
+      }
+
+      console.log('\n✅ Real blockchain events creation completed!');
+      console.log(`   Created: ${results.filter(r => r.status === 'confirmed').length} events`);
+      console.log(`   Failed: ${results.filter(r => r.status === 'failed').length} events`);
+      
+      return results;
+    } catch (error) {
+      console.error('❌ Error creating real blockchain events:', error.message);
+      throw error;
+    }
+  }
+
+  // Check contract functions and ABI (for debugging)
+  async checkContractFunctions() {
+    try {
+      console.log('🔍 Checking contract functions...');
+      console.log('   Contract Address:', CONTRACT_ADDRESS);
+      
+      // Try to call owner() to verify contract is accessible
+      const owner = await this.contract.owner();
+      console.log('   Contract Owner:', owner);
+      
+      // Check if functions exist by attempting a static call
+      const methods = ['logIdentityUsage', 'logConsentGranted', 'logConsentRevoked'];
+      
+      for (const method of methods) {
+        if (typeof this.contract[method] === 'function') {
+          console.log(`   ✅ Function exists: ${method}`);
+        } else {
+          console.warn(`   ❌ Function NOT FOUND: ${method}`);
+        }
+      }
+      
+      return {
+        contractAddress: CONTRACT_ADDRESS,
+        owner: owner,
+        accessible: true
+      };
+    } catch (error) {
+      console.error('❌ Error checking contract:', error.message);
+      return {
+        contractAddress: CONTRACT_ADDRESS,
+        error: error.message,
+        accessible: false
+      };
+    }
   }
 
   // Get current wallet status for debugging
