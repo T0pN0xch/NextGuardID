@@ -1,14 +1,14 @@
 import { useState, forwardRef, useEffect } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { LoginForm } from '@/components/auth/LoginForm';
 import { Header } from '@/components/layout/Header';
 import { Sidebar } from '@/components/layout/Sidebar';
 import { MyKadUsageConfirmation } from '@/components/mykad/MyKadUsageConfirmation';
+import { InteractiveGuide } from '@/components/onboarding/InteractiveGuide';
+import { useOnboarding } from '@/context/OnboardingContext';
 import Dashboard from '@/pages/Dashboard';
 import SuspiciousActivityPage from '@/pages/SuspiciousActivityPage';
-import MyKadAuditTrailPage from '@/pages/MyKadAuditTrailPage';
-import AuditTrailPage from '@/pages/AuditTrailPage';
-import UsagePage from '@/pages/UsagePage';
+import AuditLogPage from '@/pages/AuditLogPage';
 import ConsentPage from '@/pages/ConsentPage';
 import SettingsPage from '@/pages/SettingsPage';
 import ProfilePage from '@/pages/ProfilePage';
@@ -18,6 +18,9 @@ import blockchainService from '@/utils/blockchain';
 
 
 const Index = forwardRef<HTMLDivElement>((_, ref) => {
+  const location = useLocation();
+  const { setCurrentRoute } = useOnboarding();
+
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
     // Restore auth state from sessionStorage on mount
     const stored = sessionStorage.getItem('isAuthenticated');
@@ -32,6 +35,11 @@ const Index = forwardRef<HTMLDivElement>((_, ref) => {
   const [confirmationRequest, setConfirmationRequest] = useState<MyKadUsageConfirmationRequest | null>(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+
+  // Track current route for onboarding
+  useEffect(() => {
+    setCurrentRoute(location.pathname);
+  }, [location.pathname, setCurrentRoute]);
 
   // Persist auth state to sessionStorage whenever it changes
   useEffect(() => {
@@ -141,9 +149,7 @@ const Index = forwardRef<HTMLDivElement>((_, ref) => {
             <Route path="/" element={<Navigate to="/consent" replace />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/suspicious" element={<SuspiciousActivityPage />} />
-            <Route path="/mykad-audit-trail" element={<MyKadAuditTrailPage />} />
-            <Route path="/audit-trail" element={<AuditTrailPage />} />
-            <Route path="/usage" element={<UsagePage />} />
+            <Route path="/audit-log" element={<AuditLogPage />} />
             <Route path="/consent" element={<ConsentPage userIc={userIc} />} />
             <Route path="/profile" element={<ProfilePage userName={userName} userIc={userIc} onUpdateUserName={handleUpdateUserName} />} />
             <Route path="/settings" element={<SettingsPage userName={userName} icNumber={userIc} />} />
@@ -159,6 +165,9 @@ const Index = forwardRef<HTMLDivElement>((_, ref) => {
         onDeny={handleDeny}
         isLoading={isProcessing}
       />
+
+      {/* Interactive Onboarding Guide */}
+      <InteractiveGuide />
     </div>
   );
 });

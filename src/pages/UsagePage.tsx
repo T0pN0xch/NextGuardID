@@ -98,10 +98,10 @@ export default function UsagePage() {
     });
 
   return (
-    <div className="space-y-6 p-6">
-      <div>
-        <h1 className="text-2xl font-bold">Identity Usage History</h1>
-        <p className="text-muted-foreground">Complete timeline of where your MyKad has been used</p>
+    <div className="space-y-6 p-4 md:p-6 h-full overflow-auto">
+      <div className="mb-2">
+        <h1 className="text-3xl font-bold">Identity Usage History</h1>
+        <p className="text-sm text-muted-foreground mt-2">Complete timeline of where your MyKad has been used</p>
       </div>
 
       {/* Offline/manual IC reporting */}

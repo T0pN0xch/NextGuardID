@@ -38,13 +38,13 @@ export default function ProfilePage({ userName, userIc }: ProfilePageProps) {
     };
 
     return (
-        <div className="p-8 bg-gradient-to-br from-gray-50 to-blue-50 min-h-screen">
+        <div className="p-4 md:p-6 bg-gradient-to-br from-gray-50 to-blue-50 min-h-screen h-full overflow-auto">
             {/* Header */}
-            <div className="mb-8">
-                <div className="flex items-center justify-between gap-6 mb-6">
+            <div className="mb-4">
+                <div className="flex items-center justify-between gap-6 mb-3">
                     <div>
-                        <h1 className="text-4xl font-bold text-gray-900">User Profile</h1>
-                        <p className="text-gray-600 mt-2 text-lg">Your verified MyDigital ID profile (Read-Only)</p>
+                        <h1 className="text-3xl font-bold text-gray-900">User Profile</h1>
+                        <p className="text-sm text-gray-600 mt-2">Your verified MyDigital ID profile (Read-Only)</p>
                     </div>
                     <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-blue-600 to-cyan-600 flex items-center justify-center shadow-lg hover:shadow-xl hover:shadow-blue-500/30 transition-all">
                         <User className="w-10 h-10 text-white" />
@@ -72,11 +72,11 @@ export default function ProfilePage({ userName, userIc }: ProfilePageProps) {
             {/* Personal Information Card - Read Only */}
             <div className="bg-white rounded-2xl border-2 border-blue-200 p-8 shadow-lg hover:shadow-xl hover:shadow-blue-500/30 transition-all duration-300 mb-8">
                 <div className="mb-8">
-                    <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-                        <CheckCircle2 className="w-6 h-6 text-emerald-500" />
+                    <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                        <CheckCircle2 className="w-5 h-5 text-emerald-500" />
                         Personal Information
                     </h2>
-                    <p className="text-gray-600 text-sm mt-1">Verified via MyDigital ID</p>
+                    <p className="text-sm text-gray-600 mt-1">Verified via MyDigital ID</p>
                 </div>
 
                 {/* Read-Only Profile Fields */}

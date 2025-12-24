@@ -1,7 +1,6 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard,
-  ListChecks,
   FileKey,
   Link2,
   Settings,
@@ -9,27 +8,37 @@ import {
   ChevronRight,
   ShieldAlert,
   MapPin,
-  User,
-  Lock,
-  History
+  BookOpen
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
+import { useOnboarding } from '@/context/OnboardingContext';
 
 const navItems = [
-  { icon: User, label: 'Profile', path: '/profile' },
   { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard' },
   { icon: ShieldAlert, label: 'Suspicious Activity', path: '/suspicious' },
-  { icon: Lock, label: 'MyKad Audit Trail', path: '/mykad-audit-trail' },
-  { icon: History, label: 'Audit History', path: '/audit-trail' },
-  { icon: ListChecks, label: 'ID Usage', path: '/usage' },
+  { icon: BookOpen, label: 'Audit Log', path: '/audit-log' },
   { icon: FileKey, label: 'Consent', path: '/consent' },
   { icon: Settings, label: 'Settings', path: '/settings' },
 ];
 
 export function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
+  const { showOnboarding, currentStep } = useOnboarding();
+  const location = useLocation();
+
+  // Map route paths to step numbers
+  const stepRoutes: Record<string, number> = {
+    '/dashboard': 1,
+    '/audit-log': 2,
+    '/suspicious': 3,
+    '/consent': 4,
+    '/settings': 5,
+  };
+
+  const currentPathStep = stepRoutes[location.pathname];
+  const isCurrentStepPath = currentPathStep === currentStep && showOnboarding;
 
   return (
     <aside
@@ -46,10 +55,11 @@ export function Sidebar() {
               to={item.path}
               className={({ isActive }) =>
                 cn(
-                  "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group",
+                  "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group relative",
                   isActive
                     ? "bg-primary/10 text-primary border border-primary/20"
-                    : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+                    : "text-muted-foreground hover:text-foreground hover:bg-secondary/50",
+                  showOnboarding && stepRoutes[item.path] === currentStep ? "ring-2 ring-blue-400 shadow-lg shadow-blue-500/30" : ""
                 )
               }
             >
@@ -58,6 +68,10 @@ export function Sidebar() {
               )} />
               {!collapsed && (
                 <span className="font-medium text-sm animate-fade-in">{item.label}</span>
+              )}
+              {/* Onboarding indicator */}
+              {showOnboarding && stepRoutes[item.path] === currentStep && (
+                <div className="absolute -right-1 -top-1 w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
               )}
             </NavLink>
           ))}

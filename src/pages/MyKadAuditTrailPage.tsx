@@ -313,7 +313,7 @@ export default function MyKadAuditTrailPage() {
             console.log('🚀 Creating real blockchain events...');
             const results = await blockchainService.createRealTestEvents();
             const successCount = results.filter((r: any) => r.status === 'confirmed').length;
-            
+
             if (successCount > 0) {
                 setCreateSuccess(true);
                 console.log(`✅ Successfully created ${successCount} real blockchain events!`);
@@ -338,16 +338,16 @@ export default function MyKadAuditTrailPage() {
     const grantedCount = events.filter(e => e.action === 'CONSENT_GRANTED').length;
 
     return (
-        <div className="p-6 space-y-6 animate-fade-in">
+        <div className="p-4 md:p-6 space-y-6 animate-fade-in h-full overflow-auto">
             {/* Page Header */}
-            <div>
+            <div className="mb-2">
                 <div className="flex items-center gap-3 mb-2">
                     <div className="p-2 rounded-lg bg-primary/10">
                         <Lock className="w-6 h-6 text-primary" />
                     </div>
-                    <h1 className="text-2xl font-bold">MyKad Audit Trail</h1>
+                    <h1 className="text-3xl font-bold">MyKad Audit Trail</h1>
                 </div>
-                <p className="text-muted-foreground">
+                <p className="text-sm text-muted-foreground mt-2">
                     Complete blockchain-verified history of your MyKad identity usage in healthcare systems
                 </p>
             </div>

@@ -134,12 +134,11 @@ export default function AuditTrailPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4 md:p-8">
-      <div className="max-w-6xl mx-auto">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-slate-900 mb-2">Identity Audit Trail</h1>
-          <p className="text-lg text-slate-600">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4 md:p-6 h-full overflow-auto">
+      <div>
+        <div className="mb-2">
+          <h1 className="text-3xl font-bold text-slate-900">Identity Audit Trail</h1>
+          <p className="text-sm text-slate-600 mt-2">
             Complete, immutable record of your MyKad usage and consent approvals
           </p>
         </div>

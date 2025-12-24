@@ -100,10 +100,10 @@ export default function SuspiciousActivityPage() {
   };
 
   return (
-    <div className="space-y-6">
-      <div>
+    <div className="space-y-6 p-4 md:p-6 h-full overflow-auto">
+      <div className="mb-2">
         <h1 className="text-3xl font-bold tracking-tight">MyKad Activity Security</h1>
-        <p className="text-muted-foreground mt-1">
+        <p className="text-sm text-muted-foreground mt-2">
           Monitor unauthorized access attempts and consent violations on your MyKad identity
         </p>
       </div>

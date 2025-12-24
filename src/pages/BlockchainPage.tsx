@@ -105,11 +105,11 @@ export default function BlockchainPage({ userIc }: BlockchainPageProps) {
   };
 
   return (
-    <div className="space-y-6 p-6">
-      <div className="flex items-start justify-between">
+    <div className="space-y-6 p-4 md:p-6 h-full overflow-auto">
+      <div className="flex items-start justify-between mb-2">
         <div>
-          <h1 className="text-2xl font-bold">Blockchain Audit Log</h1>
-          <p className="text-muted-foreground">Immutable record of all identity transactions</p>
+          <h1 className="text-3xl font-bold">Blockchain Audit Log</h1>
+          <p className="text-sm text-muted-foreground mt-2">Immutable record of all identity transactions</p>
         </div>
         <Button variant="outline" onClick={handleRefresh} disabled={isRefreshing}>
           <RefreshCw className={`w-4 h-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />

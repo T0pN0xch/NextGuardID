@@ -287,10 +287,10 @@ export default function ConsentPage({ userIc }: ConsentPageProps) {
   };
 
   return (
-    <div className="space-y-6 p-6">
-      <div>
-        <h1 className="text-2xl font-bold">Consent Management</h1>
-        <p className="text-muted-foreground">Control your data sharing permissions across all platforms</p>
+    <div className="space-y-6 p-4 md:p-6 h-full overflow-auto">
+      <div className="mb-2">
+        <h1 className="text-3xl font-bold">Consent Management</h1>
+        <p className="text-sm text-muted-foreground mt-2">Control your data sharing permissions across all platforms</p>
       </div>
 
       {/* Summary Stats */}
@@ -346,7 +346,7 @@ export default function ConsentPage({ userIc }: ConsentPageProps) {
         <div className="glass-elevated rounded-xl p-6 border-amber-500/30 border-2">
           <div className="flex items-center gap-2 mb-4">
             <AlertCircle className="w-5 h-5 text-amber-500" />
-            <h2 className="text-xl font-bold">⏳ Pending Approvals ({sortedApprovalRequests.filter(r => r.expiresIn > 0).length} Active)</h2>
+            <h2 className="text-lg font-bold">⏳ Pending Approvals ({sortedApprovalRequests.filter(r => r.expiresIn > 0).length} Active)</h2>
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {sortedApprovalRequests.map((request, index) => (
@@ -360,8 +360,8 @@ export default function ConsentPage({ userIc }: ConsentPageProps) {
                     </div>
                   </div>
                   <span className={`px-2 py-1 rounded text-xs font-medium ${request.riskLevel === 'high' ? 'bg-red-500/20 text-red-700' :
-                      request.riskLevel === 'medium' ? 'bg-amber-500/20 text-amber-700' :
-                        'bg-green-500/20 text-green-700'
+                    request.riskLevel === 'medium' ? 'bg-amber-500/20 text-amber-700' :
+                      'bg-green-500/20 text-green-700'
                     }`}>
                     {request.riskLevel.toUpperCase()}
                   </span>
@@ -531,8 +531,8 @@ export default function ConsentPage({ userIc }: ConsentPageProps) {
                       <p className="text-sm text-muted-foreground mb-3">{request.purpose}</p>
                       <div className="flex items-center gap-2">
                         <span className={`px-3 py-1 rounded-full text-xs font-medium ${request.riskLevel === 'high' ? 'bg-red-500/20 text-red-700' :
-                            request.riskLevel === 'medium' ? 'bg-amber-500/20 text-amber-700' :
-                              'bg-green-500/20 text-green-700'
+                          request.riskLevel === 'medium' ? 'bg-amber-500/20 text-amber-700' :
+                            'bg-green-500/20 text-green-700'
                           }`}>
                           {request.riskLevel === 'high' && '⚠️ HIGH RISK'}
                           {request.riskLevel === 'medium' && '⚡ MEDIUM RISK'}

@@ -1,7 +1,8 @@
-import { Shield, Bell, User, LogOut, X, Wallet } from 'lucide-react';
+import { Bell, User, LogOut, X, Wallet, HelpCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+import { useOnboarding } from '@/context/OnboardingContext';
 import blockchainService from '@/utils/blockchain';
 import {
   DropdownMenu,
@@ -25,6 +26,7 @@ interface HeaderProps {
 
 export function Header({ userName, onLogout }: HeaderProps) {
   const navigate = useNavigate();
+  const { setShowOnboarding, resetOnboarding } = useOnboarding();
   const [walletConnected, setWalletConnected] = useState(false);
   const [walletAddress, setWalletAddress] = useState<string>('');
   const [isLoadingWallet, setIsLoadingWallet] = useState(false);
@@ -107,9 +109,7 @@ export function Header({ userName, onLogout }: HeaderProps) {
     <header className="bg-white sticky top-0 z-50 border-b-2 border-gray-200 shadow-md hover:shadow-lg transition-shadow duration-300">
       <div className="w-full px-4 h-16 flex items-center justify-between">
         <div className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity" onClick={() => navigate('/')}>
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-cyan-600 flex items-center justify-center shadow-lg">
-            <Shield className="w-5 h-5 text-white" />
-          </div>
+          <img src="/nexguard.png" alt="NextGuard Logo" className="w-10 h-10 object-contain" />
           <div>
             <h1 className="text-lg font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">NextGuard ID</h1>
             <p className="text-xs text-gray-600 font-medium">Digital Identity</p>
@@ -117,6 +117,17 @@ export function Header({ userName, onLogout }: HeaderProps) {
         </div>
 
         <div className="flex items-center gap-2">
+          {/* Help/Tutorial Button */}
+          <Button
+            onClick={() => setShowOnboarding(true)}
+            variant="ghost"
+            size="icon"
+            className="hover:bg-blue-50 text-blue-600"
+            title="View Interactive Tutorial"
+          >
+            <HelpCircle className="w-5 h-5" />
+          </Button>
+
           {/* Wallet Connection Button */}
           {walletConnected ? (
             <button className="flex items-center gap-2 px-4 py-2 bg-green-50 border border-green-300 rounded-lg hover:bg-green-100 transition-colors">
@@ -213,6 +224,13 @@ export function Header({ userName, onLogout }: HeaderProps) {
               >
                 <User className="w-4 h-4 mr-2" />
                 My Profile
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className="cursor-pointer hover:bg-blue-50 text-blue-600 font-semibold"
+                onClick={() => setShowOnboarding(true)}
+              >
+                <HelpCircle className="w-4 h-4 mr-2" />
+                Interactive Tutorial
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={onLogout} className="cursor-pointer text-red-600 font-semibold hover:bg-red-50">
