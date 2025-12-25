@@ -1,5 +1,11 @@
 # NextGuard ID - Digital Identity Protection Platform
 
+> **🚀 Getting Started?** [See the Complete Setup Guide](SETUP_GUIDE.md) for instructions on:
+> - Setting up the project
+> - Configuring API keys (Web3.Storage, Gemini)
+> - Running the blockchain locally
+> - Running the full development environment
+
 ## 🎯 System Objective
 
 **NextGuard ID** is a blockchain-enabled **Digital Identity Protection Platform** designed to safeguard citizens' personal identity data (particularly Malaysia's MyKad) and provide complete transparency and control over how their identity is used across industries. While initially demonstrated in the healthcare sector, the platform is architecture-agnostic and can be deployed across **any industry** (banking, government, education, retail, telecommunications, etc.).
