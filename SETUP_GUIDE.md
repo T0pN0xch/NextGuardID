@@ -52,28 +52,16 @@ Edit `.env` and add the following:
 # Web3 Storage (for IPFS storage of audit trails)
 # Get your token: https://web3.storage/
 VITE_WEB3_STORAGE_TOKEN=your_web3_storage_token_here
-
-# Google Gemini API (for AI-powered features)
-# Get your key: https://makersuite.google.com/app/apikey
-GEMINI_API_KEY=your_gemini_api_key_here
 ```
 
 ### API Key Guide
 
-#### 1. **Web3.Storage Token** (Required for Blockchain)
+#### **Web3.Storage Token** (Required for Blockchain)
 - Go to https://web3.storage/
 - Sign up with email or GitHub
 - Create a new API token
 - Copy the token and paste into `.env`
 - This token stores audit trail data on IPFS (decentralized storage)
-
-#### 2. **Google Gemini API Key** (Optional but Recommended)
-- Go to https://makersuite.google.com/app/apikey
-- Click "Create API Key"
-- Select your project (or create new)
-- Copy the API key
-- Paste into `.env`
-- Used for intelligent responses and analytics
 
 ---
 

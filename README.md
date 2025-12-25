@@ -2,7 +2,7 @@
 
 > **🚀 Getting Started?** [See the Complete Setup Guide](SETUP_GUIDE.md) for instructions on:
 > - Setting up the project
-> - Configuring API keys (Web3.Storage, Gemini)
+> - Configuring API keys (Web3.Storage)
 > - Running the blockchain locally
 > - Running the full development environment
 
@@ -569,29 +569,6 @@ Required environment variables (Vite):
 ```bash
 VITE_WEB3_STORAGE_TOKEN=your_web3_storage_token_here
 ```
-
-## AI Assistant (optional)
-
-This project includes a local Express proxy at `server/chat-proxy.js` which forwards chat and summarization requests to Google's Gemini (Generative AI) endpoints. To enable it:
-
-1. Copy `.env.example` to `.env` and set `GEMINI_API_KEY` to your server-side API key.
-2. Start the proxy server in a separate terminal:
-
-```bash
-npm run start:server
-```
-
-3. Run the frontend dev server as usual:
-
-```bash
-npm run dev
-```
-
-The dashboard and Suspicious Activity pages include a small chat widget that posts to `/api/chat` and `/api/summarize`. The proxy must be running and `GEMINI_API_KEY` set for the assistant to respond.
-
-Security note: Never store API keys in client-side env vars (VITE_ prefix). Use a server-side proxy like the included `server/chat-proxy.js` and keep keys out of version control.
-
-If you've pasted your API key into the chat here, rotate it immediately — do NOT commit keys to the repository.
 
 ## Wallet / Signing
 
