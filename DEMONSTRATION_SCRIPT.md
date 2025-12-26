@@ -436,12 +436,13 @@ A confirmation dialog asks if he's sure. Ahmad confirms.
 
 [Click Yes, Revoke]
 
-Instantly:
-1. The institution's access is cut off
-2. A revocation transaction is recorded on the blockchain
+Watch what happens instantly:
+1. The institution's access is cut off - they can no longer request any data
+2. A revocation record is created in the system
 3. If they try to access his data after this moment, they're blocked
+4. Ahmad receives confirmation that the revocation was successful
 
-This is the power of NextGuard ID. Ahmad isn't locked into permanent consent like traditional systems. He has granular control - choose exactly which data each institution gets, set expiration dates, revoke anytime.
+This is the power of NextGuard ID. Ahmad isn't locked into permanent consent like traditional systems. He has complete control - approve, deny, or revoke access anytime, instantly. Every institution knows that their access can be cut off at any moment if Ahmad changes his mind or suspects misuse.
 
 Let me navigate to Suspicious Activity to show you the fraud detection in action."
 

@@ -38,15 +38,25 @@ export default function AuditTrailPage() {
       const events = await blockchainService.getAllContractEvents();
 
       // Map blockchain events to AuditRecord format
-      const records: AuditRecord[] = events.map((evt: any) => ({
-        type: evt.actionType?.toUpperCase() || 'UNKNOWN',
-        platformId: evt.platformId || 'Unknown',
-        actionType: evt.actionType || 'Unknown',
-        timestamp: new Date(evt.timestamp * 1000).toISOString(),
-        ipfsHash: evt.ipfsHash || '',
-        txHash: evt.txHash || evt.transactionHash || '',
-        blockNumber: evt.blockNumber || 0
-      }));
+      const records: AuditRecord[] = events.map((evt: any) => {
+        // Handle actionType safely - it might be a string or object
+        let actionType = 'UNKNOWN';
+        if (typeof evt.actionType === 'string') {
+          actionType = evt.actionType.toUpperCase();
+        } else if (evt.event) {
+          actionType = evt.event.toUpperCase();
+        }
+
+        return {
+          type: actionType,
+          platformId: evt.platformId || 'Unknown',
+          actionType: evt.actionType || 'Unknown',
+          timestamp: new Date(evt.timestamp * 1000).toISOString(),
+          ipfsHash: evt.ipfsHash || '',
+          txHash: evt.txHash || evt.transactionHash || '',
+          blockNumber: evt.blockNumber || 0
+        };
+      });
 
       setAuditHistory(records);
 

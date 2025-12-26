@@ -14,6 +14,8 @@ dist-ssr
 
 # Local environment variables (do not commit)
 .env
+.env.local
+.env.*.local
 
 # Editor directories and files
 .vscode/*
@@ -25,6 +27,12 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Blockchain development files
+blockchain/.env
+blockchain/artifacts/
+blockchain/cache/
+blockchain/deployment-info.json
 
 # Documentation and development files (local reference only)
 ARCHITECTURE_DIAGRAM.md
@@ -57,15 +65,8 @@ QUICKSTART_GUIDE.md
 README_ONBOARDING.md
 REAL_BLOCKCHAIN_INTEGRATION.md
 REAL_POLYGON_SETUP.md
+SETUP_GUIDE.md
+START_HERE.md
 TYPOGRAPHY_STANDARDS.md
 VISUAL_REFERENCE.md
-
-# Build cache
-cache/
-artifacts/
-dist/
-.turbo/
-
-# Lock files
-bun.lockb
-package-lock.json
+DEMONSTRATION_SCRIPT.md

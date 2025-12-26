@@ -36,8 +36,6 @@ contract IdentityAudit {
         string memory actionType,
         string memory ipfsHash
     ) public {
-        require(msg.sender == owner, "Only owner can log");
-
         emit IdentityUsed(
             userHash,
             platformId,
@@ -52,8 +50,6 @@ contract IdentityAudit {
         string memory platformId,
         string memory ipfsHash
     ) public {
-        require(msg.sender == owner, "Only owner can log");
-
         emit ConsentGranted(userHash, platformId, block.timestamp, ipfsHash);
     }
 
@@ -62,8 +58,6 @@ contract IdentityAudit {
         string memory platformId,
         string memory ipfsHash
     ) public {
-        require(msg.sender == owner, "Only owner can log");
-
         emit ConsentRevoked(userHash, platformId, block.timestamp, ipfsHash);
     }
 }

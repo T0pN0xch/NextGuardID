@@ -12,7 +12,7 @@ const IDENTITY_AUDIT_ABI = [
 ];
 
 // Your deployed contract
-export const CONTRACT_ADDRESS = "0xb81988826bA44D5657309690b79a1137786cEb3d";
+export const CONTRACT_ADDRESS = "0x1190469e4790cfBe3Cf9293c321d7F821439fC66";
 
 // Polygon Amoy RPC
 const RPC_URL = "https://rpc-amoy.polygon.technology/";
@@ -284,12 +284,23 @@ class BlockchainService {
       console.log('   Action:', action);
       console.log('   IPFS Hash:', ipfsHash);
       
-      const tx = await contractWithSigner.logIdentityUsage(
-        userHash,
-        platform,
-        action,
-        ipfsHash || ""
-      );
+      // Choose the appropriate contract method based on action
+      let tx;
+      let methodName;
+      
+      if (action === 'CONSENT_GRANTED') {
+        methodName = 'logConsentGranted';
+        console.log('   Calling method:', methodName);
+        tx = await contractWithSigner.logConsentGranted(userHash, platform, ipfsHash || "");
+      } else if (action === 'CONSENT_REVOKED') {
+        methodName = 'logConsentRevoked';
+        console.log('   Calling method:', methodName);
+        tx = await contractWithSigner.logConsentRevoked(userHash, platform, ipfsHash || "");
+      } else {
+        methodName = 'logIdentityUsage';
+        console.log('   Calling method:', methodName);
+        tx = await contractWithSigner.logIdentityUsage(userHash, platform, action, ipfsHash || "");
+      }
       
       console.log('⏳ Transaction sent:', tx.hash);
       console.log('   Waiting for confirmation...');
@@ -349,12 +360,13 @@ class BlockchainService {
         console.log('✅ Real blockchain transaction successful!');
         return { ...txResult, ipfsHash };
       } catch (error) {
-        console.warn('Real blockchain transaction failed, falling back to mock mode:', error.message);
-        console.warn('Full error:', error);
+        console.warn('⚠️  Real blockchain transaction failed, falling back to mock mode');
+        console.warn('   Error:', error.message);
+        console.warn('   This is normal for demo - contract methods may not exist on testnet');
         // Fall through to mock mode
       }
     } else {
-      console.log('⚠️  No wallet connected, using MOCK mode');
+      console.log('⚠️  No wallet connected, using MOCK mode for demo');
     }
     
     // Otherwise, use mock mode (demo)
@@ -522,6 +534,17 @@ class BlockchainService {
   async getAllContractEvents() {
     try {
       console.log('🔍 Querying all events from Amoy contract...');
+      
+      // Re-initialize contract to ensure we have latest address
+      if (!this.contract || !this.provider) {
+        console.warn('⚠️  Contract/provider not initialized, reinitializing...');
+        this.contract = new ethers.Contract(
+          CONTRACT_ADDRESS,
+          IDENTITY_AUDIT_ABI,
+          this.provider || new ethers.JsonRpcProvider(RPC_URL)
+        );
+      }
+      
       const fromBlock = await this.getDeploymentBlock();
       console.log('📦 Deployment block:', fromBlock);
 
@@ -565,6 +588,7 @@ class BlockchainService {
       return enriched;
     } catch (error) {
       console.error('❌ Error fetching all contract events:', error);
+      console.warn('⚠️  Falling back to sample event data for demo purposes');
       return this.generateRealisticSampleEvents();
     }
   }

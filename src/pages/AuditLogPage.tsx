@@ -161,17 +161,27 @@ export default function AuditLogPage() {
         try {
             // Fetch blockchain events
             const events = await blockchainService.getAllContractEvents();
-            const blockchainRecords: UnifiedAuditRecord[] = events.map((evt: any) => ({
-                id: evt.transactionHash,
-                type: 'blockchain' as const,
-                action: evt.actionType?.toUpperCase() || 'UNKNOWN',
-                institution: evt.platformId || 'Unknown',
-                timestamp: new Date(evt.timestamp * 1000),
-                status: evt.actionType === 'CONSENT_REVOKED' ? 'revoked' : 'approved',
-                details: evt.metadata ? JSON.stringify(evt.metadata) : undefined,
-                txHash: evt.transactionHash || evt.txHash,
-                ipfsHash: evt.ipfsHash,
-            }));
+            const blockchainRecords: UnifiedAuditRecord[] = events.map((evt: any) => {
+                // Handle actionType safely - it might be a string or object
+                let actionType = 'UNKNOWN';
+                if (typeof evt.actionType === 'string') {
+                    actionType = evt.actionType.toUpperCase();
+                } else if (evt.event) {
+                    actionType = evt.event.toUpperCase();
+                }
+
+                return {
+                    id: evt.transactionHash || evt.txHash || evt.id,
+                    type: 'blockchain' as const,
+                    action: actionType,
+                    institution: evt.platformId || 'Unknown',
+                    timestamp: new Date(evt.timestamp * 1000),
+                    status: actionType === 'CONSENT_REVOKED' ? 'revoked' : 'approved',
+                    details: evt.metadata ? JSON.stringify(evt.metadata) : undefined,
+                    txHash: evt.transactionHash || evt.txHash,
+                    ipfsHash: evt.ipfsHash,
+                };
+            });
 
             // Combine all records
             const combinedRecords = [

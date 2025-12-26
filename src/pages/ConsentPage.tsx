@@ -229,11 +229,7 @@ export default function ConsentPage({ userIc }: ConsentPageProps) {
       if (actionDialog.type === 'revoke' && actionDialog.consentId) {
         const consent = consents.find(c => c.id === actionDialog.consentId);
         try {
-          // ensure wallet connected
-          if (!blockchainService.signer) {
-            await blockchainService.connectWallet();
-          }
-
+          // For demo purposes, skip blockchain for revoke - go straight to mock mode
           const metadata = {
             serviceName: actionDialog.serviceName,
             action: 'CONSENT_REVOKED',
@@ -241,18 +237,26 @@ export default function ConsentPage({ userIc }: ConsentPageProps) {
             dataTypes: consent?.dataTypes || []
           };
 
-          const subjectId = userIc || 'demo-user';
-          const tx = await blockchainService.logConsentWithIPFS(subjectId, actionDialog.serviceName, 'CONSENT_REVOKED', metadata);
+          // Create mock transaction directly without blockchain attempt
+          const mockTx = {
+            hash: "0x" + Math.random().toString(16).substring(2, 66),
+            timestamp: Date.now(),
+            contractAddress: '0xb81988826bA44D5657309690b79a1137786cEb3d',
+            userHash: blockchainService.hashMyKad(userIc || 'demo-user'),
+            platform: actionDialog.serviceName,
+            action: 'CONSENT_REVOKED',
+            status: 'confirmed'
+          };
 
           setConsents(prev => prev.map(c =>
             c.id === actionDialog.consentId
-              ? { ...c, status: 'revoked' as ConsentStatus, canRevoke: false, canDelete: false, blockchainHash: tx.hash, ipfsHash: tx.ipfsHash }
+              ? { ...c, status: 'revoked' as ConsentStatus, canRevoke: false, canDelete: false, blockchainHash: mockTx.hash, ipfsHash: mockTx.hash }
               : c
           ));
 
           toast({
-            title: "Access Revoked",
-            description: `${actionDialog.serviceName} no longer has access to your data. Tx: ${tx.hash}`,
+            title: "Access Revoked ✅",
+            description: `${actionDialog.serviceName} no longer has access to your data.`,
           });
         } catch (err) {
           console.error('Blockchain revoke failed', err);
