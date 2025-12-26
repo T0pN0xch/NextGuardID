@@ -463,6 +463,126 @@ Activity 4: 'Failed Authentication Attempts' - Yellow, Medium Risk, Resolved. So
 
 That's AI-powered fraud detection: automatic blocking of high-risk activities in real-time before fraud happens. Pattern recognition learns Ahmad's normal behavior. Every blocked attempt, every alert is recorded on blockchain. Ahmad has proof of what was attempted and when.
 
+---
+
+## PAGE 5B: REAL-TIME APPROVAL POPUP (DURING DEMO)
+
+"Now, while Ahmad is browsing the app, notice what just happened - a popup appeared on his phone screen!
+
+[Show the MyKad Usage Request Modal/Popup]
+
+This is a critical moment. Let me explain what's happening:
+
+A healthcare provider - Kuala Lumpur Hospital - is requesting access to Ahmad's MyKad right now. The system detected this request and immediately alerted Ahmad with a real-time popup. He didn't have to log back in or check his account. The notification came to him instantly.
+
+Look at what the popup shows:
+
+**Institution:** Kuala Lumpur Hospital with their icon
+**Purpose:** Patient Registration
+**Data Requested:** Full Name, IC Number, Email, Phone Number
+**Location:** Kuala Lumpur, Malaysia
+**Risk Level:** Low (green indicator)
+**Urgency:** Normal priority with countdown timer
+
+Ahmad sees ALL the details right here. He has two choices:
+1. **Approve & Confirm** - Grant access and record his approval on blockchain
+2. **Deny Request** - Reject the request and it's also recorded on blockchain
+
+This is the heart of the system. Ahmad is not a passive user. He's not hoping that institutions will ask permission - he DEMANDS permission. Every single access request requires his explicit approval.
+
+When he clicks Approve, two things happen instantly:
+1. The hospital is granted access to his data
+2. A blockchain transaction records his approval - cryptographic proof that Ahmad authorized this specific access for this specific institution on this specific date and time
+
+Let me click Approve to show you what happens."
+
+[Click Approve button on the popup]
+
+"A confirmation dialog appears for extra security, asking Ahmad to confirm one more time. He reviews the details:
+- Institution: Kuala Lumpur Hospital ✓
+- Data: Full Name, IC Number, Email, Phone Number ✓
+- Purpose: Patient Registration ✓
+- Duration: 90 days ✓
+
+He's confident this is correct, so he clicks 'Yes, Approve'."
+
+[Click Yes, Approve]
+
+"The system processes the approval. Behind the scenes:
+1. The blockchain records the transaction
+2. IPFS stores the metadata about what data was consented to
+3. The hospital receives a notification that their request was approved
+4. Ahmad receives a confirmation
+
+This is remarkable. Ahmad now has permanent proof on the blockchain that HE approved this access. If the hospital tries to access data beyond what he consented to, he can go to Polygonscan, show the blockchain record of his approval, and prove they violated his consent. No dispute. No argument. Cryptographic proof.
+
+And the beauty is: if Ahmad changes his mind in the future, he can revoke this consent anytime. The hospital's access is cut off immediately. That revocation is ALSO recorded on blockchain.
+
+That's the power of real-time approval popups - they keep users in control 24/7. You're never passive. You're always aware and always in charge."
+
+[Close the popup or continue to next page]
+
+---
+
+## PAGE 6: SETTINGS (Optional)
+
+"Let me also show you the Settings page, where Ahmad controls his preferences and notifications.
+
+[Navigate to Settings page]
+
+On the Settings page, Ahmad can:
+
+**Notification Preferences:**
+- Enable/disable push notifications for approval requests
+- Choose notification methods: In-app only, SMS, Email, or Push notification
+- Set quiet hours (e.g., don't notify between 11 PM and 8 AM)
+
+**Security Settings:**
+- Change biometric authentication
+- Update phone number for OTP
+- Review login history
+- Clear browser cache and session data
+
+**Privacy Preferences:**
+- Consent data retention period
+- Auto-revoke inactive consents (e.g., after 180 days)
+- Data deletion schedule
+- Blockchain recording preferences (always on - cannot be disabled for security)
+
+**Account Settings:**
+- Update profile information (redirects to MyDigital ID)
+- Download personal data
+- Export audit trail as PDF or CSV
+
+**About:**
+- App version
+- Terms of Service
+- Privacy Policy
+- Contact support
+- Feedback and suggestions
+
+The key here is control and transparency. Ahmad customizes how he wants to be notified, how long he wants his consent records kept, when old consents automatically expire. But the blockchain recording is permanent and cannot be disabled - that's for security.
+
+This is truly user-centric identity protection. Every setting is designed to give Ahmad control while maintaining the integrity of the blockchain audit trail."
+
+[Show the settings interface]
+
+---
+
+## PAGE 5: SUSPICIOUS ACTIVITY DETECTION
+
+"We're on the Suspicious Activity page. Ahmad's phone just alerted him that the system detected and blocked four suspicious activities.
+
+Look at Activity 1: 'Rapid Multiple Access Attempts' - Red, High Risk, Blocked. What happened? An attacker got Ahmad's MyKad information and frantically tried to open 5 accounts with different banks in 2 minutes. Five access attempts in 120 seconds is physically impossible for legitimate use. The system detected this fraud pattern instantly and blocked all five attempts. The attacker got nothing.
+
+Activity 2: 'Access from Unusual Location' - Yellow, Medium Risk, Flagged. Ahmad was in Kuala Lumpur yesterday, but today his MyKad is being used in Johor Bahru - 500 kilometers away. Physically impossible to travel that distance in 30 minutes. The system flagged it for Ahmad's review. Maybe he actually traveled, or maybe an attacker has his information. The system asks him to verify. If he denies it, future access is blocked.
+
+Activity 3: 'Consent Violation Attempt' - Red, High Risk, Blocked. Ahmad consented to UnknownBank accessing his Full Name, IC Number, Email for account opening. But the bank tried accessing his financial records, phone number, address - data Ahmad never consented to. The system detected the violation immediately and blocked it. The record is stored on blockchain. If the bank claims authorization, Ahmad has cryptographic proof they weren't authorized.
+
+Activity 4: 'Failed Authentication Attempts' - Yellow, Medium Risk, Resolved. Someone tried accessing Ahmad's account three times from different locations and failed. The system locked the account after three attempts. Ahmad was notified, verified his credentials, and resolved the alert.
+
+That's AI-powered fraud detection: automatic blocking of high-risk activities in real-time before fraud happens. Pattern recognition learns Ahmad's normal behavior. Every blocked attempt, every alert is recorded on blockchain. Ahmad has proof of what was attempted and when.
+
 That's the power of NextGuard ID. Let me summarize what we've shown you:
 
 - Dashboard gives real-time visibility of all activities
@@ -470,6 +590,7 @@ That's the power of NextGuard ID. Let me summarize what we've shown you:
 - Consent Management gives granular, revocable access control
 - Suspicious Activity provides AI-powered fraud detection and automatic blocking
 - Real-time approval popups keep Ahmad in control, alerting him instantly when his identity is requested
+- Settings give Ahmad complete control over his preferences and security
 
 Every single request, approval, denial, and blocked activity is recorded on the Polygon blockchain - immutable, transparent, and verifiable by Ahmad anytime.
 
