@@ -54,10 +54,10 @@ const Index = forwardRef<HTMLDivElement>((_, ref) => {
     setUserIc(icNumber);
     setUserName('Ahmad bin Abdullah');
     setIsAuthenticated(true);
-    // Show approval popup after 1 minute of login
+    // Show approval popup after 5 minutes of login
     setTimeout(() => {
       showMockConfirmationRequest();
-    }, 60000); // 1 minute = 60000 milliseconds
+    }, 300000); // 5 minutes = 300000 milliseconds
   };
 
   const showMockConfirmationRequest = () => {

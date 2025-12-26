@@ -284,9 +284,11 @@ Imagine this: Your MyKad is lost. Someone finds it. Now they have your identity 
 
 But what if you could see in real-time every single time someone used your MyKad? What if you could instantly approve or deny access? What if you had cryptographic proof on a public blockchain that you never authorized a particular access? That's NextGuard ID.
 
-Let me walk you through how it works. We're going to start with a user named Ahmad - a Malaysian professional whose MyKad was accidentally found at a shopping mall. Through NextGuard ID, Ahmad gains complete visibility and control over his identity. He can see exactly who's accessing it, when they're accessing it, what they're accessing, and he can approve, deny, or revoke access instantly.
+Let me walk you through how it works. We're going to start with a user named Ahmad - a Malaysian professional whose MyKad was accidentally found at a shopping mall. Ahmad has already completed the onboarding session where he set up his account and connected his MyDigital ID. Now I'll show you how he uses NextGuard ID to protect his identity and control who accesses his data.
 
-The key difference from traditional systems is blockchain. Every single action - every approval, every denial, every suspicious activity blocked - is recorded permanently on the Polygon blockchain. This isn't stored on NextGuard ID's servers where it could be hacked or deleted. It's stored across thousands of validator nodes worldwide. That means regulators, hospitals, banks - anyone can independently verify Ahmad's identity history on Polygonscan without needing to trust any company.
+Through NextGuard ID, Ahmad gains complete visibility and control over his identity. He can see exactly who's accessing it, when they're accessing it, what they're accessing, and he can approve, deny, or revoke access instantly.
+
+The key difference from traditional systems is blockchain. Every single action - every approval, every denial, every suspicious activity blocked - is recorded permanently on the Polygon blockchain. This isn't stored on NextGuard ID's servers where it could be hacked or deleted. It's stored across thousands of validator nodes worldwide.
 
 Let me show you this in action."
 
@@ -323,6 +325,8 @@ Ahmed enters the 6-digit code.
 [Enter OTP Code]
 
 He clicks Verify. Once verified, Ahmed is authenticated through both government-verified identity and the OTP. He's now logged in and taken to the home page.
+
+Important: In about 5 minutes, Ahmad will receive a real-time approval request from a healthcare institution. This will pop up while he's browsing the app - demonstrating how NextGuard ID alerts users instantly when their MyKad is being requested. This is exactly what makes the system powerful: Ahmad doesn't have to wait to check his account - the system notifies him immediately when action is needed.
 
 This two-factor authentication - MyDigital ID biometrics plus OTP - ensures secure access."
 
@@ -459,52 +463,15 @@ Activity 4: 'Failed Authentication Attempts' - Yellow, Medium Risk, Resolved. So
 
 That's AI-powered fraud detection: automatic blocking of high-risk activities in real-time before fraud happens. Pattern recognition learns Ahmad's normal behavior. Every blocked attempt, every alert is recorded on blockchain. Ahmad has proof of what was attempted and when.
 
-Let me navigate to the Blockchain Explorer to show you how institutions can independently verify these records."
+That's the power of NextGuard ID. Let me summarize what we've shown you:
 
-[Click Blockchain]
-
----
-
-## PAGE 6: BLOCKCHAIN EXPLORER
-
-"We're now on the Blockchain Explorer. Let me show you a scenario where a hospital wants to verify that all MyKad access records are authentic and haven't been tampered with.
-
-This table displays every transaction recorded on the Polygon blockchain. The columns show: Transaction Hash, Timestamp, Institution, Action, Consent Status, Block Number, and Verification Status.
-
-Let me search for 'Hospital' to show all hospital-related transactions.
-
-[Search for "Hospital"]
-
-See how it instantly filters to show only hospital transactions? The hospital can now see:
-- Every time any hospital accessed any patient's MyKad
-- When the access happened
-- What action was performed  
-- Whether it was approved, denied, or pending
-- The cryptographic proof on blockchain
-
-Each row has a TX Hash. Let me click on one to show you Polygonscan verification.
-
-[Click on a TX Hash]
-
-This opens Polygonscan - the public blockchain network. Now a hospital can see:
-- Transaction hash matches exactly
-- Block number is confirmed
-- Gas fees are shown, proving this was a real transaction that cost money to execute
-- The smart contract function is shown
-- Input parameters show all data encoded cryptographically
-
-This data isn't on some NextGuard ID server. It's stored across thousands of validator nodes on Polygon worldwide. Any hospital, any regulator, any auditor can independently verify this without needing to trust NextGuard ID. It's proof that can't be faked.
-
-That's the power for compliance. Regulatory bodies like BNM, PDPC, and PANDI require complete audit trails. With traditional databases, hospitals submit audit logs and regulators have to trust the hospital didn't modify them. With NextGuard ID, hospitals submit blockchain transaction hashes. Regulators independently verify on Polygonscan without needing to trust anyone's database.
-
-Complete transparency, complete verifiability, complete accountability.
-
-So to summarize what we've shown you:
 - Dashboard gives real-time visibility of all activities
-- Audit Trail provides blockchain-verified proof with Polygonscan links
+- Audit Trail provides blockchain-verified access history with searchable records
 - Consent Management gives granular, revocable access control
 - Suspicious Activity provides AI-powered fraud detection and automatic blocking
-- Blockchain Explorer provides public verification for regulatory compliance
+- Real-time approval popups keep Ahmad in control, alerting him instantly when his identity is requested
+
+Every single request, approval, denial, and blocked activity is recorded on the Polygon blockchain - immutable, transparent, and verifiable by Ahmad anytime.
 
 Every transaction, approval, denial, and security event is recorded on the Polygon blockchain. Users have complete control, complete transparency, and cryptographic proof of their identity usage. That's NextGuard ID."
 
