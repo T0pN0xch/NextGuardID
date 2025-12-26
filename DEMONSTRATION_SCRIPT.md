@@ -298,15 +298,25 @@ Let me show you this in action."
 
 [Show Login Page]
 
-He sees the login screen. It asks for two pieces of information: his email address and password. This is standard authentication - just like any other app. Ahmed enters his credentials.
+He sees the login screen. Instead of asking for email and password like most apps, NextGuard ID uses MyDigital ID - Malaysia's official digital identity system. Let me explain why this is important.
 
-[Enter Email and Password]
+MyDigital ID is backed by the Malaysian government. When Ahmed logs in with MyDigital ID, he's not just proving who he is to NextGuard ID - he's using a government-verified identity. This has several critical advantages:
 
-He clicks the Login button.
+First, security. MyDigital ID uses biometric authentication - fingerprint or face recognition. This is far more secure than a password that could be guessed or stolen. Even if someone steals Ahmed's phone, they can't access his account without his fingerprint or face.
 
-[Click Login]
+Second, verification. Because MyDigital ID is government-issued, NextGuard ID knows that the person logging in is actually Ahmed - not an imposter, not a bot, but the real Ahmed verified by Malaysian authorities.
 
-The system validates his credentials against the secure database. After a moment, it sends him an OTP - a One-Time Password - to his registered phone number. This is the second layer of security. Even if someone had his password, they can't access his account without the OTP.
+Third, trust. By using MyDigital ID, NextGuard ID becomes a trusted service in Malaysia's digital ecosystem. Hospitals, banks, and government agencies can trust that anyone logged into NextGuard ID has been government-verified.
+
+Ahmed opens the MyDigital ID authentication screen on his phone.
+
+[Show MyDigital ID Authentication]
+
+He uses his fingerprint or face recognition to authenticate.
+
+[Ahmed authenticates with biometric]
+
+The MyDigital ID system verifies his identity instantly. After successful authentication, the system sends him an OTP - a One-Time Password - to his registered phone number. This is the second layer of security, adding another barrier against unauthorized access.
 
 Let me navigate to the OTP verification page to show what happens next."
 
@@ -316,11 +326,11 @@ Let me navigate to the OTP verification page to show what happens next."
 
 ## PAGE 0B: OTP VERIFICATION PAGE
 
-"Now Ahmed receives an OTP on his phone - let's say it's 846372. This code is unique, valid for only 5 minutes, and can only be used once. This is called two-factor authentication - a critical security feature.
+"Now Ahmed receives an OTP on his phone - let's say it's 846372. This is the second factor of authentication. Even though he already authenticated with MyDigital ID biometrics, the system requires an additional verification code sent to his phone number.
 
 [Show OTP Page]
 
-Ahmed sees the OTP entry screen. It has a field asking for the 6-digit code. There's also a timer showing how much time is left before the code expires. If the code expires, he can request a new one.
+Ahmed sees the OTP entry screen. It has a field asking for the 6-digit code. There's also a timer showing how much time is left before the code expires - typically 5 minutes. If the code expires, he can request a new one.
 
 [Enter OTP Code]
 
@@ -328,13 +338,19 @@ Ahmed enters the code he received: 846372
 
 [Click Verify or Submit]
 
-The system validates the OTP. Once verified successfully, two things happen:
-1. Ahmed is authenticated and granted access to his NextGuard ID account
-2. The login event is recorded on the blockchain as a security record
+The system validates the OTP. Once verified successfully, three things happen:
+1. Ahmed is authenticated through both government-verified identity (MyDigital ID) and phone verification (OTP)
+2. Ahmed is granted access to his NextGuard ID account
+3. The login event is recorded on the blockchain as a security record
 
 Ahmed is now taken to the home page where he can see his digital identity control dashboard.
 
-This two-factor authentication is critical because it means that even if someone steals Ahmed's password, they cannot access his account without also having his phone. Identity protection starts with secure authentication.
+This two-factor authentication system - MyDigital ID biometrics plus OTP - is critical. It means:
+- Someone can't access Ahmed's account with just his phone number (no OTP without MyDigital ID)
+- Someone can't access Ahmed's account with just biometric credentials from another device (no MyDigital ID without the OTP from his phone)
+- Every login is recorded permanently on the blockchain
+
+Identity protection starts with secure authentication. And by using Malaysia's official MyDigital ID system, NextGuard ID ensures that only government-verified Malaysian citizens can protect their identity data.
 
 Now let me show you what Ahmed sees once he's logged in - the home page and the actual features of NextGuard ID."
 
