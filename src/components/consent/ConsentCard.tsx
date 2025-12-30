@@ -78,15 +78,30 @@ export function ConsentCard({ consent, onRevoke, onDelete, onViewBlockchain }: C
             </div>
           </div>
           
-          <div className="mt-4 pt-4 border-t border-border/50">
-            <button
-              onClick={() => onViewBlockchain(consent.blockchainHash)}
-              className="flex items-center gap-2 text-xs text-primary hover:text-primary/80 transition-colors group"
-            >
-              <Link2 className="w-3 h-3" />
-              <span className="font-mono truncate max-w-[200px]">{consent.blockchainHash}</span>
-              <ExternalLink className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-            </button>
+          <div className="mt-4 pt-4 border-t border-border/50 space-y-2">
+            <div>
+              <p className="text-xs text-muted-foreground mb-1">🔗 Blockchain:</p>
+              <button
+                onClick={() => onViewBlockchain(consent.blockchainHash)}
+                className="flex items-center gap-2 text-xs text-primary hover:text-primary/80 transition-colors group w-full"
+              >
+                <Link2 className="w-3 h-3 flex-shrink-0" />
+                <span className="font-mono truncate">{consent.blockchainHash?.slice(0, 20)}...</span>
+                <ExternalLink className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
+              </button>
+            </div>
+            {consent.ipfsHash && (
+              <div>
+                <p className="text-xs text-muted-foreground mb-1">📦 IPFS:</p>
+                <button
+                  onClick={() => window.open(`https://gateway.pinata.cloud/ipfs/${consent.ipfsHash}`, '_blank')}
+                  className="flex items-center gap-2 text-xs text-amber-600 hover:text-amber-700 transition-colors group w-full"
+                >
+                  <span className="font-mono truncate">{consent.ipfsHash?.slice(0, 20)}...</span>
+                  <ExternalLink className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
+                </button>
+              </div>
+            )}
           </div>
           
           {consent.status === 'granted' && (
