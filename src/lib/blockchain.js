@@ -1,13 +1,15 @@
 import { ethers } from 'ethers';
 
-// Contract ABI (simplified for demo)
+// Contract ABI - from compiled IdentityAudit.sol
+// These are the exact function signatures from the contract
 const IDENTITY_AUDIT_ABI = [
-  "event IdentityUsed(bytes32 indexed userHash, string platformId, string actionType, uint256 timestamp, string ipfsHash)",
+  "constructor()",
   "event ConsentGranted(bytes32 indexed userHash, string platformId, uint256 timestamp, string ipfsHash)",
   "event ConsentRevoked(bytes32 indexed userHash, string platformId, uint256 timestamp, string ipfsHash)",
-  "function logIdentityUsage(bytes32 userHash, string platformId, string actionType, string ipfsHash)",
-  "function logConsentGranted(bytes32 userHash, string platformId, string ipfsHash)",
-  "function logConsentRevoked(bytes32 userHash, string platformId, string ipfsHash)",
+  "event IdentityUsed(bytes32 indexed userHash, string platformId, string actionType, uint256 timestamp, string ipfsHash)",
+  "function logConsentGranted(bytes32 userHash, string platformId, string ipfsHash) nonpayable returns ()",
+  "function logConsentRevoked(bytes32 userHash, string platformId, string ipfsHash) nonpayable returns ()",
+  "function logIdentityUsage(bytes32 userHash, string platformId, string actionType, string ipfsHash) nonpayable returns ()",
   "function owner() view returns (address)"
 ];
 
@@ -275,21 +277,31 @@ class BlockchainService {
       // Create a new contract instance with the signer
       const browserProvider = new ethers.BrowserProvider(window.ethereum);
       const signerWithProvider = await browserProvider.getSigner();
-      const contractWithSigner = this.contract.connect(signerWithProvider);
+      const signerAddress = await signerWithProvider.getAddress();
       
-      console.log('📝 Sending real blockchain transaction...');
+      console.log('📝 Preparing blockchain transaction...');
+      console.log('   Signer:', signerAddress);
       console.log('   Contract:', CONTRACT_ADDRESS);
       console.log('   User Hash:', userHash);
       console.log('   Platform:', platform);
       console.log('   Action:', action);
-      console.log('   IPFS Hash:', ipfsHash);
+      console.log('   IPFS Hash:', ipfsHash || '(none)');
       
       // Check if contract code exists at the address
       const code = await this.provider.getCode(CONTRACT_ADDRESS);
       if (code === '0x') {
-        throw new Error(`No contract found at address ${CONTRACT_ADDRESS}. Please deploy the contract first.`);
+        throw new Error(`No contract found at address ${CONTRACT_ADDRESS}. Please deploy the contract first on Polygon Amoy.`);
       }
-      console.log('✅ Contract code verified at', CONTRACT_ADDRESS);
+      console.log('✅ Contract verified at', CONTRACT_ADDRESS);
+      
+      // Create fresh contract instance with signer (don't use this.contract which has read-only provider)
+      const contractWithSigner = new ethers.Contract(
+        CONTRACT_ADDRESS,
+        IDENTITY_AUDIT_ABI,
+        signerWithProvider
+      );
+      
+      console.log('✅ Contract instance created with signer');
       
       // Choose the appropriate contract method based on action
       let tx;
@@ -298,47 +310,46 @@ class BlockchainService {
       try {
         if (action === 'CONSENT_GRANTED') {
           methodName = 'logConsentGranted';
-          console.log('   Calling method:', methodName);
+          console.log('   → Calling:', methodName);
           tx = await contractWithSigner.logConsentGranted(userHash, platform, ipfsHash || "");
         } else if (action === 'CONSENT_REVOKED') {
           methodName = 'logConsentRevoked';
-          console.log('   Calling method:', methodName);
+          console.log('   → Calling:', methodName);
           tx = await contractWithSigner.logConsentRevoked(userHash, platform, ipfsHash || "");
         } else if (action === 'DATA_DELETION_REQUESTED') {
           methodName = 'logIdentityUsage';
-          console.log('   Calling method:', methodName, '(for deletion)');
+          console.log('   → Calling:', methodName, '(for deletion)');
           tx = await contractWithSigner.logIdentityUsage(userHash, platform, 'DATA_DELETION_REQUESTED', ipfsHash || "");
         } else {
           methodName = 'logIdentityUsage';
-          console.log('   Calling method:', methodName);
+          console.log('   → Calling:', methodName);
           tx = await contractWithSigner.logIdentityUsage(userHash, platform, action, ipfsHash || "");
         }
+        
+        console.log('⏳ Transaction submitted:', tx.hash);
+        console.log('   Waiting for confirmation...');
+        
+        const receipt = await tx.wait();
+        
+        console.log('✅ Transaction confirmed!');
+        console.log('   Block:', receipt.blockNumber);
+        console.log('   Gas Used:', receipt.gasUsed.toString());
+        
+        return {
+          hash: tx.hash,
+          etherscanUrl: `https://amoy.polygonscan.com/tx/${tx.hash}`,
+          blockNumber: receipt.blockNumber,
+          gasUsed: receipt.gasUsed.toString(),
+          status: 'confirmed'
+        };
       } catch (methodError) {
-        if (methodError.message.includes('is not a function') || methodError.message.includes('method') || methodError.code === 'INVALID_ARGUMENT') {
-          console.error(`❌ Method ${methodName} not found on contract. The contract at ${CONTRACT_ADDRESS} may not be the IdentityAudit contract.`);
-          throw new Error(`Contract method "${methodName}" not found. Contract may not be properly deployed.`);
-        }
+        console.error('❌ Contract call failed:');
+        console.error('   Method:', methodName);
+        console.error('   Error:', methodError.message);
         throw methodError;
       }
-      
-      console.log('⏳ Transaction sent:', tx.hash);
-      console.log('   Waiting for confirmation...');
-      
-      const receipt = await tx.wait();
-      
-      console.log('✅ Transaction confirmed!');
-      console.log('   Block:', receipt.blockNumber);
-      console.log('   Gas Used:', receipt.gasUsed.toString());
-      
-      return {
-        hash: tx.hash,
-        etherscanUrl: `https://amoy.polygonscan.com/tx/${tx.hash}`,
-        blockNumber: receipt.blockNumber,
-        gasUsed: receipt.gasUsed.toString(),
-        status: 'confirmed'
-      };
     } catch (error) {
-      console.error('❌ Real blockchain transaction error:', error);
+      console.error('❌ Blockchain transaction failed:', error.message);
       throw error;
     }
   }
