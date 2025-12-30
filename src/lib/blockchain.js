@@ -1,15 +1,14 @@
 import { ethers } from 'ethers';
 
 // Contract ABI - from compiled IdentityAudit.sol
-// These are the exact function signatures from the contract
+// Using correct string fragment format for ethers.js v6
 const IDENTITY_AUDIT_ABI = [
-  "constructor()",
   "event ConsentGranted(bytes32 indexed userHash, string platformId, uint256 timestamp, string ipfsHash)",
   "event ConsentRevoked(bytes32 indexed userHash, string platformId, uint256 timestamp, string ipfsHash)",
   "event IdentityUsed(bytes32 indexed userHash, string platformId, string actionType, uint256 timestamp, string ipfsHash)",
-  "function logConsentGranted(bytes32 userHash, string platformId, string ipfsHash) nonpayable returns ()",
-  "function logConsentRevoked(bytes32 userHash, string platformId, string ipfsHash) nonpayable returns ()",
-  "function logIdentityUsage(bytes32 userHash, string platformId, string actionType, string ipfsHash) nonpayable returns ()",
+  "function logConsentGranted(bytes32 userHash, string platformId, string ipfsHash)",
+  "function logConsentRevoked(bytes32 userHash, string platformId, string ipfsHash)",
+  "function logIdentityUsage(bytes32 userHash, string platformId, string actionType, string ipfsHash)",
   "function owner() view returns (address)"
 ];
 
