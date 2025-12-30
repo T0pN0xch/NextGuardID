@@ -284,22 +284,41 @@ class BlockchainService {
       console.log('   Action:', action);
       console.log('   IPFS Hash:', ipfsHash);
       
+      // Check if contract code exists at the address
+      const code = await this.provider.getCode(CONTRACT_ADDRESS);
+      if (code === '0x') {
+        throw new Error(`No contract found at address ${CONTRACT_ADDRESS}. Please deploy the contract first.`);
+      }
+      console.log('✅ Contract code verified at', CONTRACT_ADDRESS);
+      
       // Choose the appropriate contract method based on action
       let tx;
       let methodName;
       
-      if (action === 'CONSENT_GRANTED') {
-        methodName = 'logConsentGranted';
-        console.log('   Calling method:', methodName);
-        tx = await contractWithSigner.logConsentGranted(userHash, platform, ipfsHash || "");
-      } else if (action === 'CONSENT_REVOKED') {
-        methodName = 'logConsentRevoked';
-        console.log('   Calling method:', methodName);
-        tx = await contractWithSigner.logConsentRevoked(userHash, platform, ipfsHash || "");
-      } else {
-        methodName = 'logIdentityUsage';
-        console.log('   Calling method:', methodName);
-        tx = await contractWithSigner.logIdentityUsage(userHash, platform, action, ipfsHash || "");
+      try {
+        if (action === 'CONSENT_GRANTED') {
+          methodName = 'logConsentGranted';
+          console.log('   Calling method:', methodName);
+          tx = await contractWithSigner.logConsentGranted(userHash, platform, ipfsHash || "");
+        } else if (action === 'CONSENT_REVOKED') {
+          methodName = 'logConsentRevoked';
+          console.log('   Calling method:', methodName);
+          tx = await contractWithSigner.logConsentRevoked(userHash, platform, ipfsHash || "");
+        } else if (action === 'DATA_DELETION_REQUESTED') {
+          methodName = 'logIdentityUsage';
+          console.log('   Calling method:', methodName, '(for deletion)');
+          tx = await contractWithSigner.logIdentityUsage(userHash, platform, 'DATA_DELETION_REQUESTED', ipfsHash || "");
+        } else {
+          methodName = 'logIdentityUsage';
+          console.log('   Calling method:', methodName);
+          tx = await contractWithSigner.logIdentityUsage(userHash, platform, action, ipfsHash || "");
+        }
+      } catch (methodError) {
+        if (methodError.message.includes('is not a function') || methodError.message.includes('method') || methodError.code === 'INVALID_ARGUMENT') {
+          console.error(`❌ Method ${methodName} not found on contract. The contract at ${CONTRACT_ADDRESS} may not be the IdentityAudit contract.`);
+          throw new Error(`Contract method "${methodName}" not found. Contract may not be properly deployed.`);
+        }
+        throw methodError;
       }
       
       console.log('⏳ Transaction sent:', tx.hash);

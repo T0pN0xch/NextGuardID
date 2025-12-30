@@ -264,8 +264,8 @@ export default function ConsentPage({ userIc }: ConsentPageProps) {
         } catch (err) {
           console.error('Blockchain revoke failed', err);
           toast({
-            title: "Revoke Failed",
-            description: "Failed to record revocation on blockchain. Please try again.",
+            title: "Revoke Failed ❌",
+            description: err.message || "Failed to record revocation on blockchain. Please ensure the contract is properly deployed on Polygon Amoy.",
             variant: 'destructive'
           });
         } finally {
@@ -310,8 +310,8 @@ export default function ConsentPage({ userIc }: ConsentPageProps) {
         } catch (err) {
           console.error('Data deletion failed', err);
           toast({
-            title: "Deletion Request Failed",
-            description: "Failed to record deletion request on blockchain. Please try again.",
+            title: "Deletion Request Failed ❌",
+            description: err.message || "Failed to record deletion request on blockchain. Please ensure the contract is properly deployed on Polygon Amoy.",
             variant: 'destructive'
           });
         } finally {
