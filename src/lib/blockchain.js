@@ -12,7 +12,7 @@ const IDENTITY_AUDIT_ABI = [
 ];
 
 // Your deployed contract
-export const CONTRACT_ADDRESS = "0x1190469e4790cfBe3Cf9293c321d7F821439fC66";
+export const CONTRACT_ADDRESS = "0xe44232a6cf04c44c0B4143Ba43767835c313E469";
 
 // Polygon Amoy RPC
 const RPC_URL = "https://rpc-amoy.polygon.technology/";

@@ -1,7 +1,7 @@
 {
   "network": "polygon-amoy",
-  "contractAddress": "0x1190469e4790cfBe3Cf9293c321d7F821439fC66",
+  "contractAddress": "0xe44232a6cf04c44c0B4143Ba43767835c313E469",
   "deployer": "0x327eae26Bbd018Fde88595E8A8559D9703922Cd0",
-  "timestamp": "2025-12-26T04:44:37.611Z",
-  "transactionHash": "0xcd58d4653bf187b2eb30aa3913d14c62ce5b27cddae48859eb5c2fa2cd23babf"
+  "timestamp": "2025-12-30T15:37:33.638Z",
+  "transactionHash": "0xbf0acbe0d361729244e59c01f74c0aeae9cae95fc3dbc03464f103613760e840"
 }
