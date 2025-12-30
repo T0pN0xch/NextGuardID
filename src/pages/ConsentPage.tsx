@@ -228,55 +228,95 @@ export default function ConsentPage({ userIc }: ConsentPageProps) {
     (async () => {
       if (actionDialog.type === 'revoke' && actionDialog.consentId) {
         const consent = consents.find(c => c.id === actionDialog.consentId);
+        setIsProcessing(true);
         try {
-          // For demo purposes, skip blockchain for revoke - go straight to mock mode
+          // Ensure wallet connected
+          if (!blockchainService.signer) {
+            await blockchainService.connectWallet();
+          }
+
           const metadata = {
             serviceName: actionDialog.serviceName,
             action: 'CONSENT_REVOKED',
             timestamp: new Date().toISOString(),
-            dataTypes: consent?.dataTypes || []
+            dataTypes: consent?.dataTypes || [],
+            previousBlockchainHash: consent?.blockchainHash
           };
 
-          // Create mock transaction directly without blockchain attempt
-          const mockTx = {
-            hash: "0x" + Math.random().toString(16).substring(2, 66),
-            timestamp: Date.now(),
-            contractAddress: '0xb81988826bA44D5657309690b79a1137786cEb3d',
-            userHash: blockchainService.hashMyKad(userIc || 'demo-user'),
-            platform: actionDialog.serviceName,
-            action: 'CONSENT_REVOKED',
-            status: 'confirmed'
-          };
+          const subjectId = userIc || 'demo-user';
+          const tx = await blockchainService.logConsentWithIPFS(
+            subjectId,
+            actionDialog.serviceName,
+            'CONSENT_REVOKED',
+            metadata
+          );
 
           setConsents(prev => prev.map(c =>
             c.id === actionDialog.consentId
-              ? { ...c, status: 'revoked' as ConsentStatus, canRevoke: false, canDelete: false, blockchainHash: mockTx.hash, ipfsHash: mockTx.hash }
+              ? { ...c, status: 'revoked' as ConsentStatus, canRevoke: false, canDelete: false, blockchainHash: tx.hash, ipfsHash: tx.ipfsHash }
               : c
           ));
 
           toast({
             title: "Access Revoked ✅",
-            description: `${actionDialog.serviceName} no longer has access to your data.`,
+            description: `${actionDialog.serviceName} no longer has access to your data. Tx: ${tx.hash?.slice(0, 20)}...`,
           });
         } catch (err) {
           console.error('Blockchain revoke failed', err);
-          // fallback to local state update if blockchain call fails
-          setConsents(prev => prev.map(c =>
-            c.id === actionDialog.consentId
-              ? { ...c, status: 'revoked' as ConsentStatus, canRevoke: false, canDelete: false }
-              : c
-          ));
           toast({
-            title: "Access Revoked (Local)",
-            description: `${actionDialog.serviceName} marked revoked locally. Blockchain update failed.`,
+            title: "Revoke Failed",
+            description: "Failed to record revocation on blockchain. Please try again.",
             variant: 'destructive'
           });
+        } finally {
+          setIsProcessing(false);
         }
       } else if (actionDialog.type === 'delete' && actionDialog.consentId) {
-        toast({
-          title: "Deletion Request Submitted",
-          description: `A request to delete your data from ${actionDialog.serviceName} has been submitted. You will be notified when complete.`,
-        });
+        setIsProcessing(true);
+        try {
+          const consent = consents.find(c => c.id === actionDialog.consentId);
+          if (!consent) return;
+
+          // Ensure wallet connected
+          if (!blockchainService.signer) {
+            await blockchainService.connectWallet();
+          }
+
+          const metadata = {
+            serviceName: actionDialog.serviceName,
+            action: 'DATA_DELETION_REQUESTED',
+            timestamp: new Date().toISOString(),
+            dataTypes: consent.dataTypes || []
+          };
+
+          const subjectId = userIc || 'demo-user';
+          const tx = await blockchainService.logConsentWithIPFS(
+            subjectId,
+            actionDialog.serviceName,
+            'DATA_DELETION_REQUESTED',
+            metadata
+          );
+
+          setConsents(prev => prev.map(c =>
+            c.id === actionDialog.consentId
+              ? { ...c, status: 'deleted' as ConsentStatus, canRevoke: false, canDelete: false, blockchainHash: tx.hash, ipfsHash: tx.ipfsHash }
+              : c
+          ));
+
+          toast({
+            title: "Deletion Request Submitted ✅",
+            description: `A request to delete your data from ${actionDialog.serviceName} has been recorded on blockchain. Tx: ${tx.hash?.slice(0, 20)}...`,
+          });
+        } catch (err) {
+          console.error('Data deletion failed', err);
+          toast({
+            title: "Deletion Request Failed",
+            description: "Failed to record deletion request on blockchain. Please try again.",
+            variant: 'destructive'
+          });
+        } finally {
+          setIsProcessing(false);
+        }
       }
       setActionDialog({ type: null, consentId: null, serviceName: '' });
     })();
