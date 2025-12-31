@@ -2,14 +2,14 @@ import { ConsentRecord } from '@/types/identity';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { 
-  Calendar, 
-  Link2, 
-  Trash2, 
-  Ban, 
-  CheckCircle, 
+import {
+  Calendar,
+  Link2,
+  Trash2,
+  Ban,
+  CheckCircle,
   XCircle,
-  ExternalLink 
+  ExternalLink
 } from 'lucide-react';
 import { format } from 'date-fns';
 
@@ -31,7 +31,7 @@ export function ConsentCard({ consent, onRevoke, onDelete, onViewBlockchain }: C
   const StatusIcon = status.icon;
 
   return (
-    <div 
+    <div
       className={cn(
         "glass-elevated rounded-xl p-5 border transition-all duration-300 hover:shadow-lg animate-slide-up",
         status.bg
@@ -39,7 +39,7 @@ export function ConsentCard({ consent, onRevoke, onDelete, onViewBlockchain }: C
     >
       <div className="flex items-start gap-4">
         <div className="text-4xl">{consent.serviceIcon}</div>
-        
+
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2">
             <div>
@@ -50,7 +50,7 @@ export function ConsentCard({ consent, onRevoke, onDelete, onViewBlockchain }: C
               </Badge>
             </div>
           </div>
-          
+
           <div className="mt-4 space-y-2">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Calendar className="w-4 h-4" />
@@ -63,13 +63,13 @@ export function ConsentCard({ consent, onRevoke, onDelete, onViewBlockchain }: C
               </div>
             )}
           </div>
-          
+
           <div className="mt-4">
             <p className="text-xs text-muted-foreground mb-2">Data shared:</p>
             <div className="flex flex-wrap gap-1">
               {consent.dataTypes.map((data) => (
-                <span 
-                  key={data} 
+                <span
+                  key={data}
                   className="text-xs px-2 py-1 rounded-full bg-secondary text-secondary-foreground"
                 >
                   {data}
@@ -77,7 +77,7 @@ export function ConsentCard({ consent, onRevoke, onDelete, onViewBlockchain }: C
               ))}
             </div>
           </div>
-          
+
           <div className="mt-4 pt-4 border-t border-border/50 space-y-2">
             <div>
               <p className="text-xs text-muted-foreground mb-1">🔗 Blockchain:</p>
@@ -103,13 +103,13 @@ export function ConsentCard({ consent, onRevoke, onDelete, onViewBlockchain }: C
               </div>
             )}
           </div>
-          
+
           {consent.status === 'granted' && (
             <div className="flex gap-2 mt-4">
               {consent.canRevoke && (
-                <Button 
-                  variant="warning" 
-                  size="sm" 
+                <Button
+                  variant="warning"
+                  size="sm"
                   onClick={() => onRevoke(consent.id)}
                   className="flex-1"
                 >
@@ -118,9 +118,9 @@ export function ConsentCard({ consent, onRevoke, onDelete, onViewBlockchain }: C
                 </Button>
               )}
               {consent.canDelete && (
-                <Button 
-                  variant="destructive" 
-                  size="sm" 
+                <Button
+                  variant="destructive"
+                  size="sm"
                   onClick={() => onDelete(consent.id)}
                   className="flex-1"
                 >
